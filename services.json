@@ -1,0 +1,9 @@
+[
+  {
+    "name": "service1",
+    "path": "/foo",
+    "server": "localhost:5000",
+    "version": 1,
+    "description": "Service #1 of Gate"
+  }
+]
