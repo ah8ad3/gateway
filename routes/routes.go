@@ -68,7 +68,8 @@ func V1() *chi.Mux{
 							Ip: request.RemoteAddr, Time: time.Now()})
 
 						writer.Header().Set("Content-Type", "application/json")
-						body := PostService(val.Server, route, data)
+						server := findService(splitRoute[1])
+						body := PostService(server, route, data)
 						_, _ = writer.Write(body)
 					})
 
