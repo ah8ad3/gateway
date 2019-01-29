@@ -19,5 +19,18 @@
         "path": "/bar"
       }
     ]
+  },
+  {
+    "name": "service2",
+    "path": "/bar",
+    "server": "localhost:5001",
+    "version": 1,
+    "description": "Service #2 of Gate",
+    "urls": [
+      {
+        "method": "GET",
+        "path": "/foo"
+      }
+    ]
   }
 ]

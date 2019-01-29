@@ -1,13 +1,16 @@
 package routes
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/ah8ad3/gateway/logger"
 	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
 	"os"
+	"time"
 )
 
 const (
@@ -42,17 +45,52 @@ func CheckServices() {
 	}
 }
 
-func GetService(server string, path string, method string, query string) []byte {
+func GetService(server string, path string, query string) []byte {
 	url := "http://" + server + path
 	if query != "" {
 		url = url + "?" + query
 	}
-	req, _ :=http.NewRequest(method, url, nil)
+	req, _ :=http.NewRequest("GET", url, nil)
 	client := &http.Client{}
 
-	res, _ := client.Do(req)
+	res, err := client.Do(req)
+	if err != nil {
+		logger.SetLog(logger.UserLog{Log: logger.Log{Description: "Service is down!", Event: "critical"},
+			Time: time.Now(), RequestUrl: url})
+
+		return []byte(`{"error": "Service is Down!"}`)
+	}
 	defer res.Body.Close()
 	body, _ := ioutil.ReadAll(res.Body)
 
 	return body
+}
+
+
+func PostService(server string, path string, query []byte) []byte {
+	url := "http://" + server + path
+	req, _ :=http.NewRequest("POST", url, bytes.NewReader(query))
+	client := &http.Client{}
+
+	res, err := client.Do(req)
+	if err != nil {
+		logger.SetLog(logger.UserLog{Log: logger.Log{Description: "Service is down!", Event: "critical"},
+			Time: time.Now(), RequestUrl: url})
+		return []byte(`{"error": "Service is Down!"}`)
+	}
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	return body
+}
+
+func findService(path string) string {
+	path = "/" + path
+	for _, val := range Service {
+		if val.Path == path {
+			return val.Server
+		}
+	}
+	log.Fatal("bad path check services ", path)
+	return ""
 }
