@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net"
+	"net/http"
 	"os"
 )
 
@@ -17,13 +19,13 @@ var Service []Services
 func LoadServices()  {
 	data, err := ioutil.ReadFile("services.json")
 	if err != nil {
-		fmt.Println("services.json file not found")
-		os.Exit(2)
+		log.Fatal(err)
+		os.Exit(1)
 	}
 	err = json.Unmarshal(data, &Service)
 	if err != nil {
 		fmt.Println("services.json cant match to Structure read the docs or act like template")
-		os.Exit(2)
+		os.Exit(1)
 	}
 
 	for _, val := range Service {
@@ -38,4 +40,19 @@ func CheckServices() {
 			//log.Fatal(err)  // for production mode
 		}
 	}
+}
+
+func GetService(server string, path string, method string, query string) []byte {
+	url := "http://" + server + path
+	if query != "" {
+		url = url + "?" + query
+	}
+	req, _ :=http.NewRequest(method, url, nil)
+	client := &http.Client{}
+
+	res, _ := client.Do(req)
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	return body
 }

@@ -4,6 +4,20 @@
     "path": "/foo",
     "server": "localhost:5000",
     "version": 1,
-    "description": "Service #1 of Gate"
+    "description": "Service #1 of Gate",
+    "urls": [
+      {
+        "method": "GET",
+        "path": "/"
+      },
+      {
+        "method": "POST",
+        "path": "/"
+      },
+      {
+        "method": "GET",
+        "path": "/bar"
+      }
+    ]
   }
 ]
