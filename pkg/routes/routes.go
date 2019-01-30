@@ -2,10 +2,10 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/ah8ad3/gateway/pkg/auth"
 	"github.com/ah8ad3/gateway/pkg/logger"
 	"github.com/go-chi/chi"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -42,7 +42,7 @@ func V1() *chi.Mux{
 							route = "/" + route
 						}
 
-						logger.SetLog(logger.UserLog{Log: logger.Log{Event: "log"}, RequestUrl: request.URL.Path,
+						logger.SetUserLog(logger.UserLog{Log: logger.Log{Event: "log"}, RequestUrl: request.URL.Path,
 							Ip: request.RemoteAddr, Time: time.Now()})
 
 						writer.Header().Set("Content-Type", "application/json")
@@ -71,7 +71,7 @@ func V1() *chi.Mux{
 
 						data, _ :=json.Marshal(m)
 
-						logger.SetLog(logger.UserLog{Log: logger.Log{Event: "log"}, RequestUrl: request.URL.Path,
+						logger.SetUserLog(logger.UserLog{Log: logger.Log{Event: "log"}, RequestUrl: request.URL.Path,
 							Ip: request.RemoteAddr, Time: time.Now()})
 
 						writer.Header().Set("Content-Type", "application/json")
@@ -93,7 +93,10 @@ func V1() *chi.Mux{
 					})
 
 				default:
-					log.Fatal("Bad url method in service ", val.Name)
+					logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "critical",
+						Description: fmt.Sprintf("Bad url method in service %s", val.Name)},
+						Pkg: "auth", Time: time.Now()})
+					//log.Fatal("Bad url method in service ", val.Name)
 
 				}
 

@@ -8,11 +8,14 @@ import (
 	"github.com/joho/godotenv"
 	"log"
 	"net/http"
+	"time"
 )
 
 func settings() {
 	err := godotenv.Load()
 	if err != nil {
+		logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "critical", Description: err.Error()},
+			Pkg: "auth", Time: time.Now()})
 		log.Fatal("Error loading .env file")
 	}
 	logger.OpenConnection()
@@ -29,6 +32,8 @@ func main() {
 	r := routes.V1()
 	fmt.Println("Server run at :3000")
 	if err := http.ListenAndServe(":3000", r); err != nil{
+		logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "critical", Description: err.Error()},
+			Pkg: "auth", Time: time.Now()})
 		log.Fatal(err)
 	}
 }
