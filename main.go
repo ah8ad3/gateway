@@ -8,11 +8,16 @@ import (
 	"net/http"
 )
 
-func main() {
+func settings() {
 	logger.OpenConnection()
 
 	routes.LoadServices()
 	routes.CheckServices()
+
+}
+
+func main() {
+	settings()
 	r := routes.V1()
 	fmt.Println("Server run at :3000")
 	if err := http.ListenAndServe(":3000", r); err != nil{
