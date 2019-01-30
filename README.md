@@ -11,9 +11,11 @@ simple api gateway with golang
 - auth JWT and register added with middleware
 
 # TODO
-- working on crud requests
+- working on crud requests fo RouteV1
 - RoutesV2 to prefix route and act like bridge, rewrite route url
 - combining services results
+- some plugins: whitelist, intelligent load balancer, ssl support, simple monitoring,
+rate limiting, cache, REST api for gateway, nginx communication, kubernetes communication
 
 # Constants
 - services work with HTTP/1.1
