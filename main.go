@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/ah8ad3/gateway/pkg/auth"
 	"github.com/ah8ad3/gateway/pkg/logger"
 	"github.com/ah8ad3/gateway/pkg/routes"
 	"github.com/joho/godotenv"
@@ -14,8 +15,9 @@ func settings() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-
 	logger.OpenConnection()
+	// Require for auth Database staff
+	auth.OpenAuthCollection()
 
 	routes.LoadServices()
 	routes.CheckServices()

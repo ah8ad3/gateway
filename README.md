@@ -8,10 +8,10 @@ simple api gateway with golang
 - logging connect to mongoDb for save all logs
 - can be a simple load balancer, in services.json you can add more server for one service and can act like load balancer
 - environment variable support
+- auth JWT and register added with middleware
 
 # TODO
 - working on crud requests
-- working on jwt and auth staff
 - RoutesV2 to prefix route and act like bridge, rewrite route url
 - combining services results
 

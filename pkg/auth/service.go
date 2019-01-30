@@ -56,65 +56,75 @@ func OpenAuthCollection() {
 
 // CheckJwt if token is JWT and have time
 func CheckJwt(w http.ResponseWriter, r *http.Request) {
-	_ = r.ParseForm()
-	tokenstring := strings.Join(r.Form["token"], "")
-	token, _ := jwt.Parse(tokenstring, func(token *jwt.Token) (interface{}, error) {
+	w.Header().Set("Content-Type", "application/json")
+	_token := r.Header.Get("Authorization")
+	if _token == "" {
+		w.WriteHeader(400)
+		_, _ = w.Write([]byte(`{"error": "Authorization header missed with token value"}`))
+		return
+	}
+
+	token, _ := jwt.Parse(_token, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
 	// When using `Parse`, the result `Claims` would be a map.
 
 	// In another way, you can decode token to your struct, which needs to satisfy `jwt.StandardClaims`
 	user := JWT{}
-	token, _ = jwt.ParseWithClaims(tokenstring, &user, func(token *jwt.Token) (interface{}, error) {
+	token, _ = jwt.ParseWithClaims(_token, &user, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
 	if token.Valid {
-		_, _ = fmt.Fprintf(w, "this token is right")
+		w.WriteHeader(200)
+		_, _ = w.Write([]byte(`{"ok": "token right"}`))
 		return
 	}
-	_, _ = fmt.Fprintf(w, "this token is wrong")
+	w.WriteHeader(403)
+	_, _ = w.Write([]byte(`{"error": "token wrong"}`))
 	return
 }
 
 // SignJWT function to create jwt token
 func SignJWT(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		_ = r.ParseForm()
-		username := strings.Join(r.Form["username"], "")
-		password := strings.Join(r.Form["password"], "")
+	w.Header().Set("Content-Type", "application/json")
 
-		if username == "" || password == "" {
-			_, _ = fmt.Fprintf(w, "input form are incomplete")
-			return
-		}
+	_ = r.ParseForm()
+	username := strings.Join(r.Form["username"], "")
+	password := strings.Join(r.Form["password"], "")
 
-		pointer := collection.FindOne(context.Background(), bson.D{{"username", username}})
-		raw, err := pointer.DecodeBytes()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if raw == nil {
-			_, _ = fmt.Fprintf(w, "username or password wrong")
-			return
-		}
-
-		_username := string(raw.Lookup("username").Value[:])
-		_password := string(raw.Lookup("password").Value[:])
-
-		if username != _username || !ValidPassword(_password, password) {
-			_, _ = fmt.Fprintf(w, "username or password wrong")
-			return
-		}
-
-		token := createTokenString(User{Username: username, Password: password})
-		_, _ = fmt.Fprintf(w, token)
+	if username == "" || password == "" {
+		w.WriteHeader(400)
+		_, _ = w.Write([]byte(`{"error": "input form is incomplete"}`))
 		return
 	}
+
+	pointer := collection.FindOne(context.Background(), bson.D{{"username", username}})
+	raw, err := pointer.DecodeBytes()
+	if err != nil {
+		w.WriteHeader(400)
+		_, _ = w.Write([]byte(`{"error": "username or password wrong"}`))
+		return
+	}
+
+	_username := raw.Lookup("username").StringValue()
+	_password := raw.Lookup("password").StringValue()
+
+	if username != _username || !ValidPassword(_password, password) {
+		w.WriteHeader(400)
+		_, _ = w.Write([]byte(`{"error": "username or password wrong"}`))
+		return
+	}
+
+	token := createTokenString(User{Username: username, Password: password})
+	w.WriteHeader(201)
+	_, _ = w.Write([]byte(fmt.Sprintf(`{"token": "%s"}`, token)))
+
+	return
+
 }
 
 func createTokenString(user User) string {
-	expireToken := time.Now().Add(time.Hour * 24).Unix()
+	expireToken := time.Now().Add(time.Hour * 3).Unix()  // token only valid 3 hours
 	// Embed User information to `token`
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), &JWT{
 		User: user,
@@ -124,27 +134,39 @@ func createTokenString(user User) string {
 		},
 	})
 
-	// token -> string. Only server knows this secret (foobar).
-	tokenstring, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
+	// token -> string. Only server knows this secret
+	_token, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
 	if err != nil {
 		log.Fatalln(err)
 	}
-	return tokenstring
+	return _token
 }
 
+func RegisterUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	_ = r.ParseForm()
+	username := strings.Join(r.Form["username"], "")
+	password := strings.Join(r.Form["password"], "")
 
-
-func ShowLogs() {
-	// bson.D{{}} return all records in database you can create a map here
-	//logg := logger.UserLog{}
-	data1, _ := logger.Collection.Find(context.Background(), bson.D{{"log.event", "critical"}})
-
-	for data1.Next(context.Background()) {
-		raw, err := data1.DecodeBytes()
-		if err != nil { log.Fatal(err) }
-		logg := logger.Log{}
-		_ = raw.Lookup("log").Unmarshal(&logg)
-		fmt.Println(logg)
+	if username == "" || password == "" {
+		w.WriteHeader(400)
+		_, _ = w.Write([]byte(`{"error": "input form is incomplete"}`))
+		return
 	}
-}
 
+	pointer := collection.FindOne(context.Background(), bson.D{{"username", username}})
+	_, err := pointer.DecodeBytes()
+
+	if err != nil {
+
+		_, _ = collection.InsertOne(context.Background(), User{Username: username, Password: SetPassword(password)})
+
+		w.WriteHeader(201)
+		_, _ = w.Write([]byte(`{"ok": "registered"}`))
+		return
+	}
+
+	w.WriteHeader(400)
+	_, _ = w.Write([]byte(`{"error": "username is taken"}`))
+	return
+}

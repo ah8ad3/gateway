@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"github.com/ah8ad3/gateway/pkg/auth"
 	"github.com/ah8ad3/gateway/pkg/logger"
 	"github.com/go-chi/chi"
 	"log"
@@ -18,6 +19,12 @@ func welcome (w http.ResponseWriter, r *http.Request) {
 func V1() *chi.Mux{
 	r := chi.NewRouter()
 	r.Get("/",  welcome)
+
+	r.Route("/auth", func(r chi.Router) {
+		r.Post("/register", auth.RegisterUser)
+		r.Post("/sign", auth.SignJWT)
+		r.Post("/check", auth.CheckJwt)
+	})
 
 	for _, val := range Service{
 		r.Route(val.Path, func(r chi.Router) {
