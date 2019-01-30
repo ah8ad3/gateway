@@ -2,7 +2,7 @@ package routes
 
 import (
 	"encoding/json"
-	"github.com/ah8ad3/gateway/logger"
+	"github.com/ah8ad3/gateway/pkg/logger"
 	"github.com/go-chi/chi"
 	"log"
 	"net/http"

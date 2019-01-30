@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/ah8ad3/gateway/logger"
+	"github.com/ah8ad3/gateway/pkg/logger"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net"
 	"net/http"
 	"os"
@@ -18,6 +19,7 @@ const (
 	ErrorColor   = "\033[1;31m%s\033[0m"
 )
 var Service []Services
+
 
 func LoadServices()  {
 	data, err := ioutil.ReadFile("services.json")
@@ -38,9 +40,14 @@ func LoadServices()  {
 
 func CheckServices() {
 	for _, val := range Service {
-		if _, err := net.Dial("tcp", val.Server); err != nil{
-			fmt.Printf(ErrorColor, fmt.Sprintf("Service %s not Up \n", val.Name))
-			//log.Fatal(err)  // for production mode
+		for _, server := range val.Server{
+			if _, err := net.Dial("tcp", server.Server); err != nil{
+				server.Up = false
+				fmt.Printf(ErrorColor, fmt.Sprintf("Service %s not Up in server %s \n", val.Name, server.Server))
+				//log.Fatal(err)  // for production mode
+			}else {
+				server.Up = true
+			}
 		}
 	}
 }
@@ -85,10 +92,17 @@ func PostService(server string, path string, query []byte) []byte {
 }
 
 func findService(path string) string {
+	rand.Seed(time.Now().Unix())
 	path = "/" + path
 	for _, val := range Service {
 		if val.Path == path {
-			return val.Server
+			for range val.Server{
+				ser := val.Server[rand.Intn(len(val.Server))]
+				if ser.Up {
+					return ser.Server
+				}
+			}
+			return val.Server[rand.Intn(len(val.Server))].Server
 		}
 	}
 	log.Fatal("bad path check services ", path)

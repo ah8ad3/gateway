@@ -2,7 +2,10 @@
   {
     "name": "service1",
     "path": "/foo",
-    "server": "localhost:5000",
+    "server": [
+      {"server": "localhost:5000"},
+      {"server": "localhost:5001"}
+    ],
     "version": 1,
     "description": "Service #1 of Gate",
     "urls": [
@@ -23,7 +26,9 @@
   {
     "name": "service2",
     "path": "/bar",
-    "server": "localhost:5001",
+    "server": [
+      {"server": "localhost:5002"}
+    ],
     "version": 1,
     "description": "Service #2 of Gate",
     "urls": [

@@ -5,10 +5,15 @@ type Url struct {
 	Path string
 }
 
+type Server struct {
+	Server string
+	Up bool
+}
+
 type Services struct {
 	Name string
 	Path string
-	Server string
+	Server []Server
 	Version int
 	Description string
 	Urls []Url
