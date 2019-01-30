@@ -1,9 +1,21 @@
 package auth
 
 import (
+	"context"
+	"fmt"
+	"github.com/ah8ad3/gateway/pkg/logger"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 	"log"
+	"net/http"
+	"os"
+	"strings"
+	"time"
 )
+
+var collection *mongo.Collection
 
 func hashAndSalt(pwd []byte) string {
 
@@ -37,51 +49,124 @@ func comparePasswords(hashedPwd string, plainPwd []byte) bool {
 	return true
 }
 
+func OpenAuthCollection() {
+	collection = logger.DB.Collection("auth")
+}
+
 
 // CheckJwt if token is JWT and have time
-//func CheckJwt(w http.ResponseWriter, r *http.Request) {
-//	_ = r.ParseForm()
-//	tokenstring := strings.Join(r.Form["token"], "")
-//	token, _ := jwt.Parse(tokenstring, func(token *jwt.Token) (interface{}, error) {
-//		return []byte(os.Getenv("SECRET_KEY")), nil
-//	})
-//	// When using `Parse`, the result `Claims` would be a map.
-//
-//	// In another way, you can decode token to your struct, which needs to satisfy `jwt.StandardClaims`
-//	user := JWT{}
-//	token, _ = jwt.ParseWithClaims(tokenstring, &user, func(token *jwt.Token) (interface{}, error) {
-//		return []byte(os.Getenv("SECRET_KEY")), nil
-//	})
-//	if token.Valid {
-//		_, _ = fmt.Fprintf(w, "this token is right")
-//		return
-//	}
-//	_, _ = fmt.Fprintf(w, "this token is wrong")
-//	return
-//}
+func CheckJwt(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	_token := r.Header.Get("Authorization")
+	if _token == "" {
+		w.WriteHeader(400)
+		_, _ = w.Write([]byte(`{"error": "Authorization header missed with token value"}`))
+		return
+	}
+
+	token, _ := jwt.Parse(_token, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("SECRET_KEY")), nil
+	})
+	// When using `Parse`, the result `Claims` would be a map.
+
+	// In another way, you can decode token to your struct, which needs to satisfy `jwt.StandardClaims`
+	user := JWT{}
+	token, _ = jwt.ParseWithClaims(_token, &user, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("SECRET_KEY")), nil
+	})
+	if token.Valid {
+		w.WriteHeader(200)
+		_, _ = w.Write([]byte(`{"ok": "token right"}`))
+		return
+	}
+	w.WriteHeader(403)
+	_, _ = w.Write([]byte(`{"error": "token wrong"}`))
+	return
+}
 
 // SignJWT function to create jwt token
-//func SignJWT(w http.ResponseWriter, r *http.Request) {
-//	if r.Method == "POST" {
-//		_ = r.ParseForm()
-//		username := strings.Join(r.Form["username"], "")
-//		password := strings.Join(r.Form["password"], "")
-//
-//		if username == "" || password == "" {
-//			_, _ = fmt.Fprintf(w, "input form are incomplete")
-//			return
-//		}
-//
-//		user := User{}
-//		DB.Where("username = ?", username).First(&user)
-//
-//		if user.ID == 0 || !ValidPassword(user.Password, password){
-//			_, _ = fmt.Fprintf(w, "username or password wrong")
-//			return
-//		}
-//		token := createTokenString(user)
-//		_, _ = fmt.Fprintf(w, token)
-//		return
-//	}
-//}
+func SignJWT(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
+	_ = r.ParseForm()
+	username := strings.Join(r.Form["username"], "")
+	password := strings.Join(r.Form["password"], "")
+
+	if username == "" || password == "" {
+		w.WriteHeader(400)
+		_, _ = w.Write([]byte(`{"error": "input form is incomplete"}`))
+		return
+	}
+
+	pointer := collection.FindOne(context.Background(), bson.D{{"username", username}})
+	raw, err := pointer.DecodeBytes()
+	if err != nil {
+		w.WriteHeader(400)
+		_, _ = w.Write([]byte(`{"error": "username or password wrong"}`))
+		return
+	}
+
+	_username := raw.Lookup("username").StringValue()
+	_password := raw.Lookup("password").StringValue()
+
+	if username != _username || !ValidPassword(_password, password) {
+		w.WriteHeader(400)
+		_, _ = w.Write([]byte(`{"error": "username or password wrong"}`))
+		return
+	}
+
+	token := createTokenString(User{Username: username, Password: password})
+	w.WriteHeader(201)
+	_, _ = w.Write([]byte(fmt.Sprintf(`{"token": "%s"}`, token)))
+
+	return
+
+}
+
+func createTokenString(user User) string {
+	expireToken := time.Now().Add(time.Hour * 3).Unix()  // token only valid 3 hours
+	// Embed User information to `token`
+	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), &JWT{
+		User: user,
+		Age:  30,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expireToken,
+		},
+	})
+
+	// token -> string. Only server knows this secret
+	_token, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return _token
+}
+
+func RegisterUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	_ = r.ParseForm()
+	username := strings.Join(r.Form["username"], "")
+	password := strings.Join(r.Form["password"], "")
+
+	if username == "" || password == "" {
+		w.WriteHeader(400)
+		_, _ = w.Write([]byte(`{"error": "input form is incomplete"}`))
+		return
+	}
+
+	pointer := collection.FindOne(context.Background(), bson.D{{"username", username}})
+	_, err := pointer.DecodeBytes()
+
+	if err != nil {
+
+		_, _ = collection.InsertOne(context.Background(), User{Username: username, Password: SetPassword(password)})
+
+		w.WriteHeader(201)
+		_, _ = w.Write([]byte(`{"ok": "registered"}`))
+		return
+	}
+
+	w.WriteHeader(400)
+	_, _ = w.Write([]byte(`{"error": "username is taken"}`))
+	return
+}

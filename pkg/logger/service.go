@@ -10,6 +10,7 @@ import (
 )
 
 var Collection *mongo.Collection
+var DB *mongo.Database
 
 func OpenConnection() {
 	client, err := mongo.NewClient("mongodb://localhost:27017")
@@ -20,9 +21,9 @@ func OpenConnection() {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	err = client.Connect(ctx)
 
-	Collection = client.Database("gateway").Collection("log")
+	DB = client.Database("gateway")
 
-	_ = Collection
+	Collection = DB.Collection("log")
 }
 
 // SetLog set the middleware logs here
