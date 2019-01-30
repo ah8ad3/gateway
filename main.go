@@ -4,11 +4,17 @@ import (
 	"fmt"
 	"github.com/ah8ad3/gateway/pkg/logger"
 	"github.com/ah8ad3/gateway/pkg/routes"
+	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 )
 
 func settings() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	logger.OpenConnection()
 
 	routes.LoadServices()

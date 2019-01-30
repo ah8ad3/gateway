@@ -7,6 +7,7 @@ simple api gateway with golang
 - RoutesV1 to change request params like middleware and more
 - logging connect to mongoDb for save all logs
 - can be a simple load balancer, in services.json you can add more server for one service and can act like load balancer
+- environment variable support
 
 # TODO
 - working on crud requests
