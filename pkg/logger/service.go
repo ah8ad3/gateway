@@ -26,10 +26,16 @@ func OpenConnection() {
 	Collection = DB.Collection("log")
 }
 
-// SetLog set the middleware logs here
-func SetLog(log UserLog) {
+// SetUserLog set the middleware logs here
+func SetUserLog(log UserLog) {
 	_, _ = Collection.InsertOne(context.Background(), log)
 }
+
+// SetSysLog set the middleware logs here
+func SetSysLog(log SystemLog) {
+	_, _ = Collection.InsertOne(context.Background(), log)
+}
+
 
 // ShowLogs query the database
 func ShowLogs() {

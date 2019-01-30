@@ -14,3 +14,9 @@ type UserLog struct {
 	RequestUrl string
 	Time time.Time
 }
+
+type SystemLog struct {
+	Time time.Time
+	Pkg string
+	Log Log
+}

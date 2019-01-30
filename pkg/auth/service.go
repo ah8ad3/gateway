@@ -8,7 +8,6 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -26,7 +25,9 @@ func hashAndSalt(pwd []byte) string {
 	// than the MinCost (4)
 	hash, err := bcrypt.GenerateFromPassword(pwd, bcrypt.MinCost)
 	if err != nil {
-		log.Println(err)
+		logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "critical", Description: err.Error()},
+			Pkg: "auth", Time: time.Now()})
+		//log.Println(err)
 	}
 
 	// GenerateFromPassword returns a byte slice so we need to
@@ -137,7 +138,9 @@ func createTokenString(user User) string {
 	// token -> string. Only server knows this secret
 	_token, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
 	if err != nil {
-		log.Fatalln(err)
+		logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "critical", Description: err.Error()},
+			Pkg: "auth", Time: time.Now()})
+		//log.Fatalln(err)
 	}
 	return _token
 }

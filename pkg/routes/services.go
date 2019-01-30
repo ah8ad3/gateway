@@ -24,6 +24,8 @@ var Service []Services
 func LoadServices()  {
 	data, err := ioutil.ReadFile("services.json")
 	if err != nil {
+		logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "critical", Description: err.Error()},
+			Pkg: "auth", Time: time.Now()})
 		log.Fatal(err)
 		os.Exit(1)
 	}
@@ -44,6 +46,8 @@ func CheckServices() {
 			if _, err := net.Dial("tcp", server.Server); err != nil{
 				server.Up = false
 				fmt.Printf(ErrorColor, fmt.Sprintf("Service %s not Up in server %s \n", val.Name, server.Server))
+				logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "warning", Description: err.Error()},
+					Pkg: "auth", Time: time.Now()})
 				//log.Fatal(err)  // for production mode
 			}else {
 				server.Up = true
@@ -62,7 +66,7 @@ func GetService(server string, path string, query string) []byte {
 
 	res, err := client.Do(req)
 	if err != nil {
-		logger.SetLog(logger.UserLog{Log: logger.Log{Description: "Service is down!", Event: "critical"},
+		logger.SetUserLog(logger.UserLog{Log: logger.Log{Description: "Service is down!", Event: "critical"},
 			Time: time.Now(), RequestUrl: url})
 
 		return []byte(`{"error": "Service is Down!"}`)
@@ -81,7 +85,7 @@ func PostService(server string, path string, query []byte) []byte {
 
 	res, err := client.Do(req)
 	if err != nil {
-		logger.SetLog(logger.UserLog{Log: logger.Log{Description: "Service is down!", Event: "critical"},
+		logger.SetUserLog(logger.UserLog{Log: logger.Log{Description: "Service is down!", Event: "critical"},
 			Time: time.Now(), RequestUrl: url})
 		return []byte(`{"error": "Service is Down!"}`)
 	}
@@ -105,6 +109,9 @@ func findService(path string) string {
 			return val.Server[rand.Intn(len(val.Server))].Server
 		}
 	}
-	log.Fatal("bad path check services ", path)
+	logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "critical",
+		Description: fmt.Sprintf("bad path check services ", path)},
+		Pkg: "auth", Time: time.Now()})
+	//log.Fatal("bad path check services ", path)
 	return ""
 }
