@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ah8ad3/gateway/pkg/auth"
 	"github.com/ah8ad3/gateway/pkg/logger"
+	"github.com/ah8ad3/gateway/plugins/rate_limitter"
 	"github.com/go-chi/chi"
 	"net/http"
 	"strings"
@@ -16,8 +17,15 @@ func welcome (w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte("welcome"))
 }
 
+func init() {
+	go rate_limitter.CleanupVisitors()
+}
+
 func V1() *chi.Mux{
 	r := chi.NewRouter()
+	// Rate limiter per user
+	r.Use(rate_limitter.LimitMiddleware)
+
 	r.Get("/",  welcome)
 
 	r.Route("/auth", func(r chi.Router) {
