@@ -16,6 +16,7 @@ simple api gateway with golang
 - combining services results
 - some plugins: whitelist, intelligent load balancer, ssl support, simple monitoring,
 rate limiting, cache, REST api for gateway, nginx communication, kubernetes communication
+- add some go routine to check and control all services for dynamic reasons
 
 # Constants
 - services work with HTTP/1.1
