@@ -23,13 +23,16 @@ func settings() {
 	auth.OpenAuthCollection()
 
 	routes.LoadServices()
-	routes.CheckServices()
+	routes.CheckServices(false)
 
+	// check all service available every one hour
+	go routes.HealthCheck()
 }
 
 func main() {
 	settings()
 	r := routes.V1()
+
 	fmt.Println("Server run at :3000")
 	if err := http.ListenAndServe(":3000", r); err != nil{
 		logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "critical", Description: err.Error()},

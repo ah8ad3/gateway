@@ -40,17 +40,20 @@ func LoadServices()  {
 	}
 }
 
-func CheckServices() {
-	for _, val := range Service {
-		for _, server := range val.Server{
+func CheckServices(then bool) {
+	for serviceId, val := range Service {
+		for serverId, server := range val.Server{
 			if _, err := net.Dial("tcp", server.Server); err != nil{
-				server.Up = false
-				fmt.Printf(ErrorColor, fmt.Sprintf("Service %s not Up in server %s \n", val.Name, server.Server))
+				Service[serviceId].Server[serverId].Up = false
+				if then == false {
+					fmt.Printf(ErrorColor, fmt.Sprintf("Service %s not Up in server %s \n", val.Name, server.Server))
+				}
 				logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "warning", Description: err.Error()},
 					Pkg: "auth", Time: time.Now()})
 				//log.Fatal(err)  // for production mode
 			}else {
-				server.Up = true
+				fmt.Println("server ", server.Server, " is up")
+				Service[serviceId].Server[serverId].Up = true
 			}
 		}
 	}
@@ -114,4 +117,18 @@ func findService(path string) string {
 		Pkg: "auth", Time: time.Now()})
 	//log.Fatal("bad path check services ", path)
 	return ""
+}
+
+func HealthCheck() {
+	for{
+		time.Sleep(time.Duration(time.Hour * 1))
+		CheckServices(true)
+	}
+}
+
+func getServices() []byte {
+	var jData []byte
+	jData, _ = json.Marshal(Service)
+
+	return jData
 }

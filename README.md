@@ -9,11 +9,16 @@ simple api gateway with golang
 - can be a simple load balancer, in services.json you can add more server for one service and can act like load balancer
 - environment variable support
 - auth JWT and register added with middleware
+- Health check of services every 1 hours can be modified
+- Simple Rate limiter plugin per visitor
+- Ip block list
+- REST for modifying services in progress
+- Api geo location info
 
 # TODO
+- combining services results
 - working on crud requests fo RouteV1
 - RoutesV2 to prefix route and act like bridge, rewrite route url
-- combining services results
 - some plugins: whitelist, intelligent load balancer, ssl support, simple monitoring,
 rate limiting, cache, REST api for gateway, nginx communication, kubernetes communication
 
