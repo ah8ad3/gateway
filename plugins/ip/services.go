@@ -6,6 +6,7 @@ import (
 	"github.com/ah8ad3/gateway/pkg/logger"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -16,9 +17,9 @@ func init() {
 	go updateBlockList()
 }
 
-func AddBlockList(ip string, path string, days int, ever bool)  {
+func AddBlockList(ip string, path string, duration time.Duration, ever bool)  {
 	blockList = append(blockList, &BlockIpList{ip: ip, createdTime: time.Now(),
-		expireTime:time.Now().Add(time.Hour * time.Duration(24 * days)), path: path, ever: ever, active: true})
+		expireTime:time.Now().Add(duration), path: path, ever: ever, active: true})
 }
 
 func updateBlockList()  {
@@ -30,8 +31,13 @@ func updateBlockList()  {
 	}
 }
 
-func checkApiBlock()  {
-
+func isApiBlock(path string, ip string) bool {
+	for _, val := range blockList{
+		if val.active && val.path == path && val.ip == ip {
+			return true
+		}
+	}
+	return false
 }
 
 func getApi(api string) *ApiIp {
@@ -52,20 +58,24 @@ func getApi(api string) *ApiIp {
 // IpInfoMiddleware this must not use like this must implement
 func IpInfoMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		splitRoute := strings.Split(r.URL.Path, "/")
+		// extract server path from url
+		path := splitRoute[1]
 		apiInfo := getApi(r.RemoteAddr)
 		if apiInfo.status == "success" {
 			apiIp = append(apiIp, apiInfo)
+			if isApiBlock(path, r.RemoteAddr) {
+				http.Error(w, http.StatusText(403), http.StatusForbidden)
+				return
+			}
 		}else {
 			logger.SetUserLog(logger.UserLog{Time: time.Now(), Ip: r.RemoteAddr, RequestUrl: r.URL.Path,
 				Log: logger.Log{Event: "critical", Description: "api ip not respond correct response at this"}})
-
+			if isApiBlock(path, r.RemoteAddr) {
+				http.Error(w, http.StatusText(403), http.StatusForbidden)
+				return
+			}
 		}
-		limiter := getVisitor(r.RemoteAddr)
-		if limiter.Allow() == false {
-			http.Error(w, http.StatusText(429), http.StatusTooManyRequests)
-			return
-		}
-
 		next.ServeHTTP(w, r)
 	})
 }

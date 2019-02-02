@@ -14,7 +14,7 @@ import (
 
 func welcome (w http.ResponseWriter, r *http.Request) {
 	_ = r
-	_, _ = w.Write([]byte("welcome"))
+	_, _ = w.Write(getServices())
 }
 
 func init() {
