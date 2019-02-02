@@ -3,15 +3,16 @@ package auth
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"os"
+	"strings"
+	"time"
+
 	"github.com/ah8ad3/gateway/pkg/logger"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
-	"net/http"
-	"os"
-	"strings"
-	"time"
 )
 
 var collection *mongo.Collection
@@ -50,10 +51,10 @@ func comparePasswords(hashedPwd string, plainPwd []byte) bool {
 	return true
 }
 
+// OpenAuthCollection open the collection of mongoDB called auth
 func OpenAuthCollection() {
 	collection = logger.DB.Collection("auth")
 }
-
 
 // CheckJwt if token is JWT and have time
 func CheckJwt(w http.ResponseWriter, r *http.Request) {
@@ -125,7 +126,7 @@ func SignJWT(w http.ResponseWriter, r *http.Request) {
 }
 
 func createTokenString(user User) string {
-	expireToken := time.Now().Add(time.Hour * 3).Unix()  // token only valid 3 hours
+	expireToken := time.Now().Add(time.Hour * 3).Unix() // token only valid 3 hours
 	// Embed User information to `token`
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), &JWT{
 		User: user,
@@ -145,6 +146,7 @@ func createTokenString(user User) string {
 	return _token
 }
 
+// RegisterUser function use in V1 router for sign up user
 func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	_ = r.ParseForm()

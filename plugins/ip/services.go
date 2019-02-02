@@ -3,36 +3,38 @@ package ip
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ah8ad3/gateway/pkg/logger"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/ah8ad3/gateway/pkg/logger"
 )
 
-var blockList []BlockIpList
-var apiIp []ApiIp
+var blockList []BlockIPList
+var apiIP []APIIP
 
 func init() {
 	go updateBlockList()
 }
 
-func AddBlockList(ip string, path string, duration time.Duration, ever bool)  {
-	blockList = append(blockList, &BlockIpList{ip: ip, createdTime: time.Now(),
-		expireTime:time.Now().Add(duration), path: path, ever: ever, active: true})
+// AddBlockList to add some ip for blocking with expire time
+func AddBlockList(ip string, path string, duration time.Duration, ever bool) {
+	blockList = append(blockList, BlockIPList{ip: ip, createdTime: time.Now(),
+		expireTime: time.Now().Add(duration), path: path, ever: ever, active: true})
 }
 
-func updateBlockList()  {
+func updateBlockList() {
 	time.Sleep(time.Duration(time.Minute * 5))
-	for listId, val := range blockList {
+	for listID, val := range blockList {
 		if val.expireTime.Before(time.Now()) {
-			blockList[listId].active = false
+			blockList[listID].active = false
 		}
 	}
 }
 
-func isApiBlock(path string, ip string) bool {
-	for _, val := range blockList{
+func isAPIBlock(path string, ip string) bool {
+	for _, val := range blockList {
 		if val.active && val.path == path && val.ip == ip {
 			return true
 		}
@@ -40,8 +42,8 @@ func isApiBlock(path string, ip string) bool {
 	return false
 }
 
-func getApi(api string) *ApiIp {
-	apiInfo := &ApiIp{}
+func getAPI(api string) *APIIP {
+	apiInfo := &APIIP{}
 	response, err := http.Get(fmt.Sprintf("http://ip-api.com/json/%s", api))
 	if err != nil {
 		logger.SetSysLog(logger.SystemLog{Time: time.Now(), Pkg: "plugins/ip",
@@ -55,23 +57,23 @@ func getApi(api string) *ApiIp {
 	return apiInfo
 }
 
-// IpInfoMiddleware this must not use like this must implement
-func IpInfoMiddleware(next http.Handler) http.Handler {
+// InfoMiddleware this must not use like this must implement
+func InfoMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		splitRoute := strings.Split(r.URL.Path, "/")
 		// extract server path from url
 		path := splitRoute[1]
-		apiInfo := getApi(r.RemoteAddr)
+		apiInfo := getAPI(r.RemoteAddr)
 		if apiInfo.status == "success" {
-			apiIp = append(apiIp, apiInfo)
-			if isApiBlock(path, r.RemoteAddr) {
+			apiIP = append(apiIP, *apiInfo)
+			if isAPIBlock(path, r.RemoteAddr) {
 				http.Error(w, http.StatusText(403), http.StatusForbidden)
 				return
 			}
-		}else {
-			logger.SetUserLog(logger.UserLog{Time: time.Now(), Ip: r.RemoteAddr, RequestUrl: r.URL.Path,
+		} else {
+			logger.SetUserLog(logger.UserLog{Time: time.Now(), IP: r.RemoteAddr, RequestURL: r.URL.Path,
 				Log: logger.Log{Event: "critical", Description: "api ip not respond correct response at this"}})
-			if isApiBlock(path, r.RemoteAddr) {
+			if isAPIBlock(path, r.RemoteAddr) {
 				http.Error(w, http.StatusText(403), http.StatusForbidden)
 				return
 			}

@@ -3,30 +3,32 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ah8ad3/gateway/pkg/auth"
-	"github.com/ah8ad3/gateway/pkg/logger"
-	"github.com/ah8ad3/gateway/plugins/rate_limitter"
-	"github.com/go-chi/chi"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/ah8ad3/gateway/pkg/auth"
+	"github.com/ah8ad3/gateway/pkg/logger"
+	"github.com/ah8ad3/gateway/plugins/ratelimitter"
+	"github.com/go-chi/chi"
 )
 
-func welcome (w http.ResponseWriter, r *http.Request) {
+func welcome(w http.ResponseWriter, r *http.Request) {
 	_ = r
 	_, _ = w.Write(getServices())
 }
 
 func init() {
-	go rate_limitter.CleanupVisitors()
+	go ratelimitter.CleanupVisitors()
 }
 
-func V1() *chi.Mux{
+// V1 Route function for first method of routing
+func V1() *chi.Mux {
 	r := chi.NewRouter()
 	// Rate limiter per user
-	r.Use(rate_limitter.LimitMiddleware)
+	r.Use(ratelimitter.LimitMiddleware)
 
-	r.Get("/",  welcome)
+	r.Get("/", welcome)
 
 	r.Route("/auth", func(r chi.Router) {
 		r.Post("/register", auth.RegisterUser)
@@ -34,7 +36,7 @@ func V1() *chi.Mux{
 		r.Post("/check", auth.CheckJwt)
 	})
 
-	for _, val := range Service{
+	for _, val := range Service {
 		r.Route(val.Path, func(r chi.Router) {
 			for _, url := range val.Urls {
 				switch url.Method {
@@ -46,12 +48,12 @@ func V1() *chi.Mux{
 						route := strings.Join(splitRoute[2:], "/")
 						if route == "" {
 							route = "/"
-						}else {
+						} else {
 							route = "/" + route
 						}
 
-						logger.SetUserLog(logger.UserLog{Log: logger.Log{Event: "log"}, RequestUrl: request.URL.Path,
-							Ip: request.RemoteAddr, Time: time.Now()})
+						logger.SetUserLog(logger.UserLog{Log: logger.Log{Event: "log"}, RequestURL: request.URL.Path,
+							IP: request.RemoteAddr, Time: time.Now()})
 
 						writer.Header().Set("Content-Type", "application/json")
 
@@ -67,20 +69,20 @@ func V1() *chi.Mux{
 						route := strings.Join(splitRoute, "/")
 						if route == "" {
 							route = "/"
-						}else {
+						} else {
 							route = "/" + route
 						}
 						_ = request.ParseForm()
 
-						m := make(map[string] interface{})
+						m := make(map[string]interface{})
 						for key, value := range request.Form {
 							m[key] = strings.Join(value, "")
 						}
 
-						data, _ :=json.Marshal(m)
+						data, _ := json.Marshal(m)
 
-						logger.SetUserLog(logger.UserLog{Log: logger.Log{Event: "log"}, RequestUrl: request.URL.Path,
-							Ip: request.RemoteAddr, Time: time.Now()})
+						logger.SetUserLog(logger.UserLog{Log: logger.Log{Event: "log"}, RequestURL: request.URL.Path,
+							IP: request.RemoteAddr, Time: time.Now()})
 
 						writer.Header().Set("Content-Type", "application/json")
 						server := findService(splitRoute[1])

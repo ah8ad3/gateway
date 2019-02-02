@@ -2,18 +2,19 @@ package ip
 
 import "time"
 
-// this struct fill with all values receive from ip-api and the method are for
-type ApiIp struct {
-	query string
-	status string
-	country string
+// APIIP this struct fill with all values receive from ip-api and the method are for
+type APIIP struct {
+	query       string
+	status      string
+	country     string
 	countryCode string
-	region string
-	regionName string
-	timezone string
+	region      string
+	regionName  string
+	timezone    string
 }
 
-type BlockIpList struct {
+// BlockIPList struct for all ips that banned from service
+type BlockIPList struct {
 	// the ip address of user
 	ip string
 

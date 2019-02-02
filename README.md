@@ -1,4 +1,6 @@
 # gateway
+[![Go Report Card](https://goreportcard.com/badge/github.com/ah8ad3/gateway)](https://goreportcard.com/report/github.com/ah8ad3/gateway)
+
 simple api gateway with golang
 
 # Features
