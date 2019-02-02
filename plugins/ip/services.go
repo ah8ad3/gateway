@@ -24,9 +24,9 @@ func AddBlockList(ip string, path string, duration time.Duration, ever bool)  {
 
 func updateBlockList()  {
 	time.Sleep(time.Duration(time.Minute * 5))
-	for _, val := range blockList {
+	for listId, val := range blockList {
 		if val.expireTime.Before(time.Now()) {
-			val.active = false
+			blockList[listId].active = false
 		}
 	}
 }
