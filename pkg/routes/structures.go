@@ -12,8 +12,8 @@ type Server struct {
 	Up     bool
 }
 
-// Services define structure of service loaded to this gateway
-type Services struct {
+// Service define structure of service loaded to this gateway
+type Service struct {
 	Name        string
 	Path        string
 	Server      []Server

@@ -36,7 +36,7 @@ func V1() *chi.Mux {
 		r.Post("/check", auth.CheckJwt)
 	})
 
-	for _, val := range Service {
+	for _, val := range Services {
 		r.Route(val.Path, func(r chi.Router) {
 			for _, url := range val.Urls {
 				switch url.Method {

@@ -23,25 +23,25 @@ const (
 	ErrorColor = "\033[1;31m%s\033[0m"
 )
 
-// Service define all services that connect to gateway
-var Service []Services
+// Services define all services that connect to gateway
+var Services []Service
 
 // LoadServices function for loading services from json file
 func LoadServices() {
 	data, err := ioutil.ReadFile("services.json")
 	if err != nil {
 		logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "critical", Description: err.Error()},
-			Pkg: "auth", Time: time.Now()})
+			Pkg: "routes", Time: time.Now()})
 		log.Fatal(err)
 		os.Exit(1)
 	}
-	err = json.Unmarshal(data, &Service)
+	err = json.Unmarshal(data, &Services)
 	if err != nil {
 		fmt.Println("services.json cant match to Structure read the docs or act like template")
 		os.Exit(1)
 	}
 
-	for _, val := range Service {
+	for _, val := range Services {
 		fmt.Printf(WarningColor, fmt.Sprintf("Service %s Loaded \n", val.Name))
 	}
 }
@@ -49,19 +49,19 @@ func LoadServices() {
 // CheckServices function for check if service is available or not
 // params: then : mean that function call at start or later in health
 func CheckServices(then bool) {
-	for serviceID, val := range Service {
+	for serviceID, val := range Services {
 		for serverID, server := range val.Server {
 			if _, err := net.Dial("tcp", server.Server); err != nil {
-				Service[serviceID].Server[serverID].Up = false
+				Services[serviceID].Server[serverID].Up = false
 				if then == false {
 					fmt.Printf(ErrorColor, fmt.Sprintf("Service %s not Up in server %s \n", val.Name, server.Server))
 				}
 				logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "warning", Description: err.Error()},
-					Pkg: "auth", Time: time.Now()})
+					Pkg: "routes", Time: time.Now()})
 				//log.Fatal(err)  // for production mode
 			} else {
 				fmt.Println("server ", server.Server, " is up")
-				Service[serviceID].Server[serverID].Up = true
+				Services[serviceID].Server[serverID].Up = true
 			}
 		}
 	}
@@ -110,7 +110,7 @@ func PostService(server string, path string, query []byte) []byte {
 func findService(path string) string {
 	rand.Seed(time.Now().Unix())
 	path = "/" + path
-	for _, val := range Service {
+	for _, val := range Services {
 		if val.Path == path {
 			for range val.Server {
 				ser := val.Server[rand.Intn(len(val.Server))]
@@ -138,7 +138,7 @@ func HealthCheck() {
 
 func getServices() []byte {
 	var jData []byte
-	jData, _ = json.Marshal(Service)
+	jData, _ = json.Marshal(Services)
 
 	return jData
 }

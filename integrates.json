@@ -1,0 +1,11 @@
+[
+    {
+        "name": "inte_1",
+        "version": 1,
+        "path": "/agg",
+        "join": [
+            "/foo/bar",
+            "/bar/"
+        ]
+    }
+]

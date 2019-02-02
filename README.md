@@ -16,6 +16,7 @@ simple api gateway with golang
 - Ip block list
 - REST for modifying services in progress
 - Api geo location info
+- Integrates.json for add aggregates patterns
 
 # TODO
 - combining services results

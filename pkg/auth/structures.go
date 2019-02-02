@@ -6,14 +6,13 @@ import "github.com/dgrijalva/jwt-go"
 type User struct {
 	Username string
 	Password string
-	Email string
+	Email    string
 }
-
 
 // JWT model for save in database
 type JWT struct {
 	User User
-	Age int
+	Age  int
 	jwt.StandardClaims
 }
 
