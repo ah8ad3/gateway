@@ -1,5 +1,6 @@
 # gateway
 [![Go Report Card](https://goreportcard.com/badge/github.com/ah8ad3/gateway)](https://goreportcard.com/report/github.com/ah8ad3/gateway)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fah8ad3%2Fgateway.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fah8ad3%2Fgateway?ref=badge_shield)
 
 simple api gateway with golang
 
@@ -42,3 +43,7 @@ testing to fix all bugs
 -----
 I dont implement api gateway with all standard features because i dont need them now.
 i will implement a simple api gateway for my private project, after that i will implement more good features
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fah8ad3%2Fgateway.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fah8ad3%2Fgateway?ref=badge_large)
