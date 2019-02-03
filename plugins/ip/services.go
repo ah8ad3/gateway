@@ -14,21 +14,20 @@ import (
 var blockList []BlockIPList
 var apiIP []APIIP
 
-func init() {
-	go updateBlockList()
-}
-
 // AddBlockList to add some ip for blocking with expire time
 func AddBlockList(ip string, path string, duration time.Duration, ever bool) {
 	blockList = append(blockList, BlockIPList{ip: ip, createdTime: time.Now(),
 		expireTime: time.Now().Add(duration), path: path, ever: ever, active: true})
 }
 
-func updateBlockList() {
-	time.Sleep(time.Duration(time.Minute * 5))
-	for listID, val := range blockList {
-		if val.expireTime.Before(time.Now()) {
-			blockList[listID].active = false
+// UpdateBlockList for update all block list for delete expired
+func UpdateBlockList() {
+	for {
+		time.Sleep(time.Duration(time.Minute * 1))
+		for listID, val := range blockList {
+			if val.expireTime.Before(time.Now()) {
+				blockList[listID].active = false
+			}
 		}
 	}
 }
@@ -63,7 +62,10 @@ func InfoMiddleware(next http.Handler) http.Handler {
 		splitRoute := strings.Split(r.URL.Path, "/")
 		// extract server path from url
 		path := splitRoute[1]
-		apiInfo := getAPI(r.RemoteAddr)
+
+		// This method disabled now but must implement with goroutine later
+		//apiInfo := getAPI(r.RemoteAddr)
+		apiInfo := &APIIP{status: "fail"}
 		if apiInfo.status == "success" {
 			apiIP = append(apiIP, *apiInfo)
 			if isAPIBlock(path, r.RemoteAddr) {

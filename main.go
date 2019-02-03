@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/ah8ad3/gateway/pkg/integrate"
 	"log"
 	"net/http"
 	"time"
@@ -25,6 +26,8 @@ func settings() {
 
 	routes.LoadServices()
 	routes.CheckServices(false)
+
+	integrate.LoadIntegration()
 
 	// check all service available every one hour
 	go routes.HealthCheck()

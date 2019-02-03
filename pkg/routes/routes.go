@@ -3,6 +3,8 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ah8ad3/gateway/pkg/integrate"
+	"github.com/ah8ad3/gateway/plugins/ip"
 	"net/http"
 	"strings"
 	"time"
@@ -20,13 +22,18 @@ func welcome(w http.ResponseWriter, r *http.Request) {
 
 func init() {
 	go ratelimitter.CleanupVisitors()
+	go ip.UpdateBlockList()
 }
 
 // V1 Route function for first method of routing
 func V1() *chi.Mux {
 	r := chi.NewRouter()
+
 	// Rate limiter per user
 	r.Use(ratelimitter.LimitMiddleware)
+
+	// Ip block Middleware
+	r.Use(ip.InfoMiddleware)
 
 	r.Get("/", welcome)
 
@@ -57,8 +64,10 @@ func V1() *chi.Mux {
 
 						writer.Header().Set("Content-Type", "application/json")
 
+
 						server := findService(splitRoute[1])
-						body := GetService(server, route, request.URL.RawQuery)
+						body, code := GetService(server, route, request.URL.RawQuery)
+						writer.WriteHeader(code)
 						_, _ = writer.Write(body)
 					})
 
@@ -86,7 +95,8 @@ func V1() *chi.Mux {
 
 						writer.Header().Set("Content-Type", "application/json")
 						server := findService(splitRoute[1])
-						body := PostService(server, route, data)
+						body, code := PostService(server, route, data)
+						writer.WriteHeader(code)
 						_, _ = writer.Write(body)
 					})
 
@@ -111,6 +121,50 @@ func V1() *chi.Mux {
 				}
 
 			}
+		})
+	}
+
+	for _, val := range integrate.Integrates{
+		r.Get(val.Path, func(w http.ResponseWriter, r *http.Request) {
+			var result []map[string]interface{}
+			_ = result
+			for _, val := range integrate.Integrates{
+				if val.Path == r.URL.Path {
+					for _, service := range val.Join {
+						var ser []map[string]interface{}
+						_ = ser
+						url := r.Host + service
+						res, err :=GetIntegrateService(url, r.URL.RawQuery)
+
+						// check if service offline create error cause fixed aggregation
+						if err && val.Fixed {
+							logger.SetUserLog(logger.UserLog{Log: logger.Log{Event: "log",
+								Description: "One of the services was offline in aggregation"}, RequestURL: r.URL.Path,
+								IP: r.RemoteAddr, Time: time.Now()})
+							_, _ = w.Write([]byte(`{"error": "Aggregation failed one of the services are offline, log stored"}`))
+
+							return
+						}
+
+						_ = json.Unmarshal(res, &ser)
+						for _, item := range ser{
+							result = append(result, item)
+						}
+					}
+				}
+			}
+			// check if all the sevices are offline
+			if result == nil {
+				logger.SetUserLog(logger.UserLog{Log: logger.Log{Event: "log",
+					Description: "all of the services was offline in aggregation"}, RequestURL: r.URL.Path,
+					IP: r.RemoteAddr, Time: time.Now()})
+				_, _ = w.Write([]byte(`{"error": "Aggregation failed all of the services are offline, log stored"}`))
+
+				return
+			}
+			jData, _ := json.Marshal(result)
+			_, _ = w.Write(jData)
+			return
 		})
 	}
 	return r

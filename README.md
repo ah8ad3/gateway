@@ -1,4 +1,5 @@
 # gateway
+[![Build Status](https://travis-ci.org/ah8ad3/gateway.svg?branch=master)](https://travis-ci.org/ah8ad3/gateway)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ah8ad3/gateway)](https://goreportcard.com/report/github.com/ah8ad3/gateway)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fah8ad3%2Fgateway.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fah8ad3%2Fgateway?ref=badge_shield)
 
@@ -17,14 +18,14 @@ simple api gateway with golang
 - Ip block list
 - REST for modifying services in progress
 - Api geo location info
-- Integrates.json for add aggregates patterns
+- Aggregate requests dynamically by define in integrate.json by template
 
 # TODO
-- combining services results
+- ApiInfo async
 - working on crud requests fo RouteV1
 - RoutesV2 to prefix route and act like bridge, rewrite route url
-- some plugins: whitelist, intelligent load balancer, ssl support, simple monitoring,
-rate limiting, cache, REST api for gateway, nginx communication, kubernetes communication
+- some plugins: intelligent load balancer, ssl support, simple monitoring,
+cache for gateway, nginx communication, kubernetes communication
 
 # Constants
 - services work with HTTP/1.1

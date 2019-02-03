@@ -6,6 +6,7 @@
         "join": [
             "/foo/bar",
             "/bar/"
-        ]
+        ],
+        "fixed": false
     }
 ]

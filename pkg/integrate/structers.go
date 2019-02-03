@@ -6,4 +6,5 @@ type Integrate struct {
 	Version int
 	Path    string
 	Join    []string
+	Fixed bool
 }

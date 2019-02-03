@@ -68,7 +68,7 @@ func CheckServices(then bool) {
 }
 
 // GetService function for implement GET at V1 Routing
-func GetService(server string, path string, query string) []byte {
+func GetService(server string, path string, query string) ([]byte, int) {
 	url := "http://" + server + path
 	if query != "" {
 		url = url + "?" + query
@@ -81,16 +81,16 @@ func GetService(server string, path string, query string) []byte {
 		logger.SetUserLog(logger.UserLog{Log: logger.Log{Description: "Service is down!", Event: "critical"},
 			Time: time.Now(), RequestURL: url})
 
-		return []byte(`{"error": "Service is Down!"}`)
+		return []byte(`{"error": "Service is Down!"}`), 404
 	}
 	defer res.Body.Close()
 	body, _ := ioutil.ReadAll(res.Body)
 
-	return body
+	return body, 200
 }
 
 // PostService function for implement POST at V1 Routing
-func PostService(server string, path string, query []byte) []byte {
+func PostService(server string, path string, query []byte) ([]byte, int) {
 	url := "http://" + server + path
 	req, _ := http.NewRequest("POST", url, bytes.NewReader(query))
 	client := &http.Client{}
@@ -99,12 +99,12 @@ func PostService(server string, path string, query []byte) []byte {
 	if err != nil {
 		logger.SetUserLog(logger.UserLog{Log: logger.Log{Description: "Service is down!", Event: "critical"},
 			Time: time.Now(), RequestURL: url})
-		return []byte(`{"error": "Service is Down!"}`)
+		return []byte(`{"error": "Service is Down!"}`), 404
 	}
 	defer res.Body.Close()
 	body, _ := ioutil.ReadAll(res.Body)
 
-	return body
+	return body, 200
 }
 
 func findService(path string) string {
@@ -141,4 +141,28 @@ func getServices() []byte {
 	jData, _ = json.Marshal(Services)
 
 	return jData
+}
+
+// GetService function for implement GET at V1 Routing
+func GetIntegrateService(url string, query string) ([]byte, bool) {
+	url = "http://" + url
+	if query != "" {
+		url = url + "?" + query
+	}
+
+	req, _ := http.NewRequest("GET", url, nil)
+	client := &http.Client{}
+
+	res, _ := client.Do(req)
+
+	if res.StatusCode != 200 {
+		logger.SetUserLog(logger.UserLog{Log: logger.Log{Description: "Service is down!", Event: "critical"},
+			Time: time.Now(), RequestURL: url})
+
+		return []byte(`{"error": "Service is Down!"}`), true
+	}
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	return body, false
 }
