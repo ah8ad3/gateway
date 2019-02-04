@@ -15,11 +15,6 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func welcome(w http.ResponseWriter, r *http.Request) {
-	_ = r
-	_, _ = w.Write(getServices())
-}
-
 func init() {
 	go ratelimitter.CleanupVisitors()
 	go ip.UpdateBlockList()
@@ -36,6 +31,10 @@ func V1() *chi.Mux {
 	r.Use(ip.InfoMiddleware)
 
 	r.Get("/", welcome)
+
+	r.Route("/admin", func(r chi.Router) {
+		r.Get("/service", adminGetServices)
+	})
 
 	r.Route("/auth", func(r chi.Router) {
 		r.Post("/register", auth.RegisterUser)
@@ -134,7 +133,7 @@ func V1() *chi.Mux {
 						var ser []map[string]interface{}
 						_ = ser
 						url := r.Host + service
-						res, err :=GetIntegrateService(url, r.URL.RawQuery)
+						res, err := integrate.GetIntegrateService(url, r.URL.RawQuery)
 
 						// check if service offline create error cause fixed aggregation
 						if err && val.Fixed {

@@ -143,26 +143,12 @@ func getServices() []byte {
 	return jData
 }
 
-// GetService function for implement GET at V1 Routing
-func GetIntegrateService(url string, query string) ([]byte, bool) {
-	url = "http://" + url
-	if query != "" {
-		url = url + "?" + query
-	}
+func welcome(w http.ResponseWriter, r *http.Request) {
+	_ = r
+	_, _ = w.Write([]byte("Welcome to gateway"))
+}
 
-	req, _ := http.NewRequest("GET", url, nil)
-	client := &http.Client{}
-
-	res, _ := client.Do(req)
-
-	if res.StatusCode != 200 {
-		logger.SetUserLog(logger.UserLog{Log: logger.Log{Description: "Service is down!", Event: "critical"},
-			Time: time.Now(), RequestURL: url})
-
-		return []byte(`{"error": "Service is Down!"}`), true
-	}
-	defer res.Body.Close()
-	body, _ := ioutil.ReadAll(res.Body)
-
-	return body, false
+func adminGetServices(w http.ResponseWriter, r *http.Request) {
+	_ = r
+	_, _ = w.Write(getServices())
 }

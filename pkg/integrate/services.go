@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
@@ -41,3 +42,29 @@ func LoadIntegration() {
 		fmt.Printf(WarningColor, fmt.Sprintf("Aggregate %s Loaded \n", val.Name))
 	}
 }
+
+
+// GetService function for implement GET at V1 Routing
+func GetIntegrateService(url string, query string) ([]byte, bool) {
+	url = "http://" + url
+	if query != "" {
+		url = url + "?" + query
+	}
+
+	req, _ := http.NewRequest("GET", url, nil)
+	client := &http.Client{}
+
+	res, _ := client.Do(req)
+
+	if res.StatusCode != 200 {
+		logger.SetUserLog(logger.UserLog{Log: logger.Log{Description: "Service is down!", Event: "critical"},
+			Time: time.Now(), RequestURL: url})
+
+		return []byte(`{"error": "Service is Down!"}`), true
+	}
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	return body, false
+}
+

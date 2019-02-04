@@ -1,2 +1,2 @@
 language: go
-script: go get -v -t github.com/ah8ad3/tamgo
+script: go get -v -t github.com/ah8ad3/gateway
