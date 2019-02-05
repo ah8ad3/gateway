@@ -1,4 +1,6 @@
-package routes
+package proxy
+
+import "github.com/ah8ad3/gateway/plugins"
 
 // URL define routes of services
 type URL struct {
@@ -20,4 +22,5 @@ type Service struct {
 	Version     int
 	Description string
 	Urls        []URL
+	plugins 	[]plugins.Plugin
 }

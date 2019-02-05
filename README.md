@@ -1,9 +1,18 @@
-# gateway
+<p align="center">  
+  <img height="150" src="./gateway.png"  alt="Gateway" title="Gateway">
+</p>
+
 [![Build Status](https://travis-ci.org/ah8ad3/gateway.svg?branch=master)](https://travis-ci.org/ah8ad3/gateway)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ah8ad3/gateway)](https://goreportcard.com/report/github.com/ah8ad3/gateway)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fah8ad3%2Fgateway.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fah8ad3%2Fgateway?ref=badge_shield)
 
-simple api gateway with golang
+---
+
+**Note:** This project may not be youre ideal gateway, we do our best if you want to help, we appreciate that
+
+---
+
+This is an simple gateway written in Golang
 
 # Features
 - define all services in services.json file
@@ -20,7 +29,20 @@ simple api gateway with golang
 - Api geo location info
 - Aggregate requests dynamically by define in integrate.json by template
 
+# Installation
+### Manual
+```bash
+    git clone https://github.com/ah8ad3/gateway
+    cd gateway
+    make build
+    ./dist/gateway run
+```
+
+### Docker
+Soon...
+
 # TODO
+- Plugins separate for each service
 - ApiInfo async
 - working on crud requests fo RouteV1
 - RoutesV2 to prefix route and act like bridge, rewrite route url
@@ -44,6 +66,11 @@ testing to fix all bugs
 -----
 I dont implement api gateway with all standard features because i dont need them now.
 i will implement a simple api gateway for my private project, after that i will implement more good features
+
+
+# Contributing
+Just pick one of the Todo works and do it, or write some plugin for it,
+in github standard mode PR and ...
 
 
 ## License

@@ -3,14 +3,16 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ah8ad3/gateway/pkg/admin"
 	"github.com/ah8ad3/gateway/pkg/integrate"
+	"github.com/ah8ad3/gateway/pkg/proxy"
 	"github.com/ah8ad3/gateway/plugins/ip"
 	"net/http"
 	"strings"
 	"time"
 
-	"github.com/ah8ad3/gateway/pkg/auth"
 	"github.com/ah8ad3/gateway/pkg/logger"
+	"github.com/ah8ad3/gateway/plugins/auth"
 	"github.com/ah8ad3/gateway/plugins/ratelimitter"
 	"github.com/go-chi/chi"
 )
@@ -30,10 +32,10 @@ func V1() *chi.Mux {
 	// Ip block Middleware
 	r.Use(ip.InfoMiddleware)
 
-	r.Get("/", welcome)
+	r.Get("/", admin.Welcome)
 
 	r.Route("/admin", func(r chi.Router) {
-		r.Get("/service", adminGetServices)
+		r.Get("/service", admin.GETServices)
 	})
 
 	r.Route("/auth", func(r chi.Router) {
@@ -42,7 +44,7 @@ func V1() *chi.Mux {
 		r.Post("/check", auth.CheckJwt)
 	})
 
-	for _, val := range Services {
+	for _, val := range proxy.Services {
 		r.Route(val.Path, func(r chi.Router) {
 			for _, url := range val.Urls {
 				switch url.Method {
@@ -62,7 +64,6 @@ func V1() *chi.Mux {
 							IP: request.RemoteAddr, Time: time.Now()})
 
 						writer.Header().Set("Content-Type", "application/json")
-
 
 						server := findService(splitRoute[1])
 						body, code := GetService(server, route, request.URL.RawQuery)

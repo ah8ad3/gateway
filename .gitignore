@@ -13,3 +13,16 @@
 
 # All env variables
 .env
+
+.build/
+
+dist/
+
+.exe
+*.test
+*.prof
+gin-bin
+
+_book
+vendor
+nod
