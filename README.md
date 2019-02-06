@@ -43,6 +43,7 @@ Soon...
 
 # TODO
 - Plugins separate for each service
+- Replace mongoDB, .env with another toy
 - ApiInfo async
 - working on crud requests fo RouteV1
 - RoutesV2 to prefix route and act like bridge, rewrite route url

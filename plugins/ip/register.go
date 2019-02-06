@@ -1,10 +1,9 @@
-package ratelimitter
-
-var config = make(map[string]interface{}, 1)
+package ip
 
 // RegisterNewPlugin for add this plugin to plugin center
 func RegisterNewPlugin() (string, bool, map[string]interface{}) {
-	config = confTemplate(config)
+	config := make(map[string]interface{}, 1)
+	confTemplate(config)
 	return "rateLimiter", true, config
 }
 

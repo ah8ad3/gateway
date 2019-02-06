@@ -51,9 +51,9 @@ func CleanupVisitors() {
 	for {
 		time.Sleep(time.Minute)
 		mtx.Lock()
-		for ip, v := range visitors {
+		for id, v := range visitors {
 			if time.Now().Sub(v.lastSeen) > 3*time.Minute {
-				delete(visitors, ip)
+				delete(visitors, id)
 			}
 		}
 		mtx.Unlock()
@@ -76,4 +76,22 @@ func LimitMiddleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+func TestMiddle(a time.Duration) func(handler http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			limiter := getVisitor(r.RemoteAddr)
+			if limiter.Allow() == false {
+				splitRoute := strings.Split(r.URL.Path, "/")
+				// extract server path from url
+				path := splitRoute[1]
+				ip.AddBlockList(r.RemoteAddr, path, time.Duration(time.Second*a), false)
+				http.Error(w, http.StatusText(429), http.StatusTooManyRequests)
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
 }

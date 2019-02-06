@@ -23,7 +23,7 @@ func AddBlockList(ip string, path string, duration time.Duration, ever bool) {
 // UpdateBlockList for update all block list for delete expired
 func UpdateBlockList() {
 	for {
-		time.Sleep(time.Duration(time.Minute * 1))
+		time.Sleep(time.Duration(time.Second * 5))
 		for listID, val := range blockList {
 			if val.expireTime.Before(time.Now()) {
 				blockList[listID].active = false

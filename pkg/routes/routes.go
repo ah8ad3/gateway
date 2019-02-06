@@ -28,7 +28,7 @@ func V1() *chi.Mux {
 	r := chi.NewRouter()
 
 	// Rate limiter per user
-	r.Use(ratelimitter.LimitMiddleware)
+	r.Use(ratelimitter.TestMiddle(10))
 
 	// Ip block Middleware
 	r.Use(ip.InfoMiddleware)

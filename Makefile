@@ -6,7 +6,7 @@ WARN_COLOR=\033[33;01m
 
 PKG_SRC := github.com/ah8ad3/gateway
 
-.PHONY: all clean deps build
+.PHONY: all
 
 all: clean deps test build
 
@@ -54,3 +54,6 @@ clean:
 	@go clean
 	@rm -rf bin $GOPATH/bin
 
+number:
+	@echo "$(OK_COLOR)==> checking code numbers$(NO_COLOR)"
+	@find . -name "*.go" | xargs wc -l
