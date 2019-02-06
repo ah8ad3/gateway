@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ah8ad3/gateway/plugins"
+
 	"github.com/ah8ad3/gateway/pkg/integrate"
 	"github.com/ah8ad3/gateway/pkg/logger"
 	"github.com/ah8ad3/gateway/pkg/proxy"
@@ -47,6 +49,8 @@ func RUN(ip string, port string) {
 	}
 
 	listen := ip + ":" + port
+
+	fmt.Println(plugins.Plugins)
 
 	fmt.Println("Server run at ", listen)
 	if err := http.ListenAndServe(listen, r); err != nil {

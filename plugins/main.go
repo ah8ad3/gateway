@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/ah8ad3/gateway/pkg/logger"
+	"github.com/ah8ad3/gateway/plugins/ratelimitter"
 )
 
 // Plugin simple struct for plugins that define for service
@@ -15,6 +16,9 @@ type Plugin struct {
 
 // Plugins all plugins that this gateway have and can set to proxies
 var Plugins []Plugin
+
+// plugs unregistered plugins are here
+var plugs []interface{}
 
 // SetUPPlugin to add plugin fro creator to plugin list
 // return error if true mean that error happened
@@ -43,4 +47,13 @@ func FindPlugin(name string, active bool, conf map[string]interface{}) (Plugin, 
 	}
 
 	return Plugin{}, true
+}
+
+func registerPlugins() {
+	plugs[0] = ratelimitter.RegisterNewPlgin
+
+	for id := range plugs {
+		name, active, config := plugs[id].(func())()
+	}
+
 }
