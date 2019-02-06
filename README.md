@@ -28,6 +28,8 @@ This is an simple gateway written in Golang
 - REST for modifying services in progress
 - Api geo location info
 - Aggregate requests dynamically by define in integrate.json by template
+- DB manager with encryption to manage proxy and plugins
+- Middleware per proxy 
 
 # Installation
 ### Manual
@@ -42,7 +44,6 @@ This is an simple gateway written in Golang
 Soon...
 
 # TODO
-- Plugins separate for each service
 - Replace mongoDB, .env with another toy
 - ApiInfo async
 - working on crud requests fo RouteV1

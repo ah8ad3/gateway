@@ -3,6 +3,8 @@ package proxy
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ah8ad3/gateway/pkg/db"
+	"github.com/ah8ad3/gateway/plugins"
 	"io/ioutil"
 	"log"
 	"net"
@@ -41,6 +43,12 @@ func LoadServices() {
 	for _, val := range Services {
 		fmt.Printf(WarningColor, fmt.Sprintf("Service %s Loaded \n", val.Name))
 	}
+
+	JData, _ := json.Marshal(Services)
+	db.InsertProxy(JData)
+	var ser []Service
+	_ = json.Unmarshal(db.GetProxies(), &ser)
+	fmt.Println(ser)
 }
 
 // CheckServices function for check if service is available or not
@@ -70,4 +78,23 @@ func HealthCheck() {
 		time.Sleep(time.Duration(time.Hour * 1))
 		CheckServices(true)
 	}
+}
+
+// AddPlugin api for add plugin to proxy
+func AddPlugin(serviceName string, pluginName string, config map[string]interface{}) (string, bool) {
+	for id, val := range Services {
+		if val.Name == serviceName {
+			plugin, err := plugins.AddPluginProxy(pluginName, true, config)
+			if err {
+				logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "log", Description: "plugin not found or name is empty"},
+					Time: time.Now(), Pkg: "proxy"})
+				return "plugin not found or name is empty", true
+			}
+			Services[id].plugins = append(Services[id].plugins, plugin)
+			return "ok", false
+		}
+	}
+	logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "log", Description: "proxy not found"},
+		Time: time.Now(), Pkg: "proxy"})
+	return "proxy not found", true
 }

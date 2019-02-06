@@ -1,6 +1,7 @@
 package ratelimitter
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 	"sync"
@@ -61,32 +62,16 @@ func CleanupVisitors() {
 }
 
 // LimitMiddleware to check for the too many request every too many requests
-// will ban for 1 minutes
-func LimitMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		limiter := getVisitor(r.RemoteAddr)
-		if limiter.Allow() == false {
-			splitRoute := strings.Split(r.URL.Path, "/")
-			// extract server path from url
-			path := splitRoute[1]
-			ip.AddBlockList(r.RemoteAddr, path, time.Duration(time.Minute*1), false)
-			http.Error(w, http.StatusText(429), http.StatusTooManyRequests)
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	})
-}
-
-func TestMiddle(a time.Duration) func(handler http.Handler) http.Handler {
+func LimitMiddleware(config map[string]interface{}) func(handler http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			limiter := getVisitor(r.RemoteAddr)
 			if limiter.Allow() == false {
+				fmt.Println(config["block_time"])
 				splitRoute := strings.Split(r.URL.Path, "/")
 				// extract server path from url
 				path := splitRoute[1]
-				ip.AddBlockList(r.RemoteAddr, path, time.Duration(time.Second*a), false)
+				ip.AddBlockList(r.RemoteAddr, path, time.Duration(time.Second*10), false)
 				http.Error(w, http.StatusText(429), http.StatusTooManyRequests)
 				return
 			}
