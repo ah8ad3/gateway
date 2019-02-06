@@ -1,20 +1,20 @@
 package plugins
 
 import (
-	"github.com/ah8ad3/gateway/pkg/logger"
 	"time"
+
+	"github.com/ah8ad3/gateway/pkg/logger"
 )
 
 // Plugin simple struct for plugins that define for service
 type Plugin struct {
-	Name string
+	Name   string
 	Active bool
 	Config map[string]interface{}
 }
 
 // Plugins all plugins that this gateway have and can set to proxies
 var Plugins []Plugin
-
 
 // SetUPPlugin to add plugin fro creator to plugin list
 // return error if true mean that error happened

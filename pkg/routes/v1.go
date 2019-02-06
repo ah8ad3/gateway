@@ -3,11 +3,12 @@ package routes
 import (
 	"bytes"
 	"fmt"
-	"github.com/ah8ad3/gateway/pkg/proxy"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"time"
+
+	"github.com/ah8ad3/gateway/pkg/proxy"
 
 	"github.com/ah8ad3/gateway/pkg/logger"
 )

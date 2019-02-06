@@ -3,12 +3,13 @@ package proxy
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ah8ad3/gateway/pkg/logger"
 	"io/ioutil"
 	"log"
 	"net"
 	"os"
 	"time"
+
+	"github.com/ah8ad3/gateway/pkg/logger"
 )
 
 const (

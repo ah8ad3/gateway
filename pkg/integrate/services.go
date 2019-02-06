@@ -43,7 +43,6 @@ func LoadIntegration() {
 	}
 }
 
-
 // GetIntegrateService function for implement GET at V1 Routing
 func GetIntegrateService(url string, query string) ([]byte, bool) {
 	url = "http://" + url

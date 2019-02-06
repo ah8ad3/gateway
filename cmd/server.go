@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+
 	"github.com/ah8ad3/gateway/pkg"
 	"github.com/spf13/cobra"
 )

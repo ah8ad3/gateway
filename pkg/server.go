@@ -2,15 +2,16 @@ package pkg
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/ah8ad3/gateway/pkg/integrate"
 	"github.com/ah8ad3/gateway/pkg/logger"
 	"github.com/ah8ad3/gateway/pkg/proxy"
 	"github.com/ah8ad3/gateway/pkg/routes"
 	"github.com/ah8ad3/gateway/plugins/auth"
 	"github.com/joho/godotenv"
-	"log"
-	"net/http"
-	"time"
 )
 
 func settings() {
