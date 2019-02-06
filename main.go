@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/ah8ad3/gateway/cmd"
 	"log"
 	"os"
+
+	"github.com/ah8ad3/gateway/cmd"
 )
 
 func main() {

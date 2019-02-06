@@ -3,13 +3,14 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/ah8ad3/gateway/pkg/admin"
 	"github.com/ah8ad3/gateway/pkg/integrate"
 	"github.com/ah8ad3/gateway/pkg/proxy"
 	"github.com/ah8ad3/gateway/plugins/ip"
-	"net/http"
-	"strings"
-	"time"
 
 	"github.com/ah8ad3/gateway/pkg/logger"
 	"github.com/ah8ad3/gateway/plugins/auth"
@@ -124,11 +125,11 @@ func V1() *chi.Mux {
 		})
 	}
 
-	for _, val := range integrate.Integrates{
+	for _, val := range integrate.Integrates {
 		r.Get(val.Path, func(w http.ResponseWriter, r *http.Request) {
 			var result []map[string]interface{}
 			_ = result
-			for _, val := range integrate.Integrates{
+			for _, val := range integrate.Integrates {
 				if val.Path == r.URL.Path {
 					for _, service := range val.Join {
 						var ser []map[string]interface{}
@@ -147,7 +148,7 @@ func V1() *chi.Mux {
 						}
 
 						_ = json.Unmarshal(res, &ser)
-						for _, item := range ser{
+						for _, item := range ser {
 							result = append(result, item)
 						}
 					}
