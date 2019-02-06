@@ -1,6 +1,7 @@
 package plugins
 
 import (
+	"log"
 	"time"
 
 	"github.com/ah8ad3/gateway/pkg/logger"
@@ -32,10 +33,9 @@ func (p Plugin) SetUPPlugin() bool {
 	return false
 }
 
-// FindPlugin to find and set plugin to proxy by costumer
+// AddPluginProxy to find and set plugin to proxy by costumer
 // bool means error
-func FindPlugin(name string, active bool, conf map[string]interface{}) (Plugin, bool) {
-
+func AddPluginProxy(name string, active bool, conf map[string]interface{}) (Plugin, bool) {
 	if name == "" {
 		return Plugin{}, true
 	}
@@ -49,11 +49,18 @@ func FindPlugin(name string, active bool, conf map[string]interface{}) (Plugin, 
 	return Plugin{}, true
 }
 
-func registerPlugins() {
-	plugs[0] = ratelimitter.RegisterNewPlgin
+// RegisterPlugins for add plugs to Plugins
+func RegisterPlugins() {
+	// add your'e plugin here
+	plugs = append(plugs, ratelimitter.RegisterNewPlugin)
 
 	for id := range plugs {
-		name, active, config := plugs[id].(func())()
-	}
+		name, active, config := plugs[id].(func()(string, bool, map[string]interface{}))()
 
+		err := Plugin{Name: name, Active: active, Config: config}.SetUPPlugin()
+
+		if err{
+			log.Fatal("name of plugin cant be empty")
+		}
+	}
 }

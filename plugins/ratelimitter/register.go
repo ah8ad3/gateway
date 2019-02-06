@@ -1,14 +1,15 @@
 package ratelimitter
 
-var config map[string]interface{}
-
-// RegisterNewPlgin for add this plugin to plugin center
-func RegisterNewPlgin() (string, bool, map[string]interface{}) {
-	confTemplate()
-	return "rateLimitter", true, config
+// RegisterNewPlugin for add this plugin to plugin center
+func RegisterNewPlugin() (string, bool, map[string]interface{}) {
+	config := make(map[string]interface{}, 1)
+	confTemplate(config)
+	return "rateLimiter", true, config
 }
 
-func confTemplate() {
+func confTemplate(config map[string]interface{}) map[string]interface{}{
 	config["block_time"] = 60
 	config["rps"] = 5
+
+	return config
 }

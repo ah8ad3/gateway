@@ -2,11 +2,10 @@ package pkg
 
 import (
 	"fmt"
+	"github.com/ah8ad3/gateway/plugins"
 	"log"
 	"net/http"
 	"time"
-
-	"github.com/ah8ad3/gateway/plugins"
 
 	"github.com/ah8ad3/gateway/pkg/integrate"
 	"github.com/ah8ad3/gateway/pkg/logger"
@@ -32,6 +31,9 @@ func settings() {
 
 	integrate.LoadIntegration()
 
+	// register all plugins to gateway
+	plugins.RegisterPlugins()
+
 	// check all service available every one hour
 	go proxy.HealthCheck()
 }
@@ -49,8 +51,6 @@ func RUN(ip string, port string) {
 	}
 
 	listen := ip + ":" + port
-
-	fmt.Println(plugins.Plugins)
 
 	fmt.Println("Server run at ", listen)
 	if err := http.ListenAndServe(listen, r); err != nil {
