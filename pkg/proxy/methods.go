@@ -26,29 +26,29 @@ const (
 var Services []Service
 
 // LoadServices function for loading services from json file
-func LoadServices() {
-	data, err := ioutil.ReadFile("services.json")
-	if err != nil {
-		logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "critical", Description: err.Error()},
-			Pkg: "routes", Time: time.Now()})
-		log.Fatal(err)
-		os.Exit(1)
-	}
-	err = json.Unmarshal(data, &Services)
-	if err != nil {
-		fmt.Println("services.json cant match to Structure read the docs or act like template")
-		os.Exit(1)
+func LoadServices(jsonData bool) {
+	if jsonData {
+		data, err := ioutil.ReadFile("services.json")
+		if err != nil {
+			log.Fatal(err)
+			os.Exit(1)
+		}
+		err = json.Unmarshal(data, &Services)
+		if err != nil {
+			fmt.Println("services.json cant match to Structure read the docs or act like template")
+			os.Exit(1)
+		}
+	}else {
+		// this is how get info from db
+		_ = json.Unmarshal(db.GetProxies(), &Services)
 	}
 
 	for _, val := range Services {
 		fmt.Printf(WarningColor, fmt.Sprintf("Service %s Loaded \n", val.Name))
 	}
 
-	JData, _ := json.Marshal(Services)
-	db.InsertProxy(JData)
-	var ser []Service
-	_ = json.Unmarshal(db.GetProxies(), &ser)
-	fmt.Println(ser)
+	// save data to db automatically after load
+	saveServices()
 }
 
 // CheckServices function for check if service is available or not
@@ -91,10 +91,18 @@ func AddPlugin(serviceName string, pluginName string, config map[string]interfac
 				return "plugin not found or name is empty", true
 			}
 			Services[id].plugins = append(Services[id].plugins, plugin)
+			saveServices()
+			// save services after change automatically
+
 			return "ok", false
 		}
 	}
 	logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "log", Description: "proxy not found"},
 		Time: time.Now(), Pkg: "proxy"})
 	return "proxy not found", true
+}
+
+func saveServices() {
+	JData, _ := json.Marshal(Services)
+	db.InsertProxy(JData)
 }

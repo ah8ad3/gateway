@@ -62,7 +62,7 @@ func CleanupVisitors() {
 }
 
 // LimitMiddleware to check for the too many request every too many requests
-func LimitMiddleware(config map[string]interface{}) func(handler http.Handler) http.Handler {
+func Middleware(config map[string]interface{}) func(handler http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			limiter := getVisitor(r.RemoteAddr)

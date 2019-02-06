@@ -2,6 +2,7 @@ package plugins
 
 import (
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/ah8ad3/gateway/pkg/logger"
@@ -13,6 +14,7 @@ type Plugin struct {
 	Name   string
 	Active bool
 	Config map[string]interface{}
+	Middleware func(config map[string]interface{}) func(handler http.Handler) http.Handler
 }
 
 // Plugins all plugins that this gateway have and can set to proxies

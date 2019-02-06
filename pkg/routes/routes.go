@@ -47,6 +47,11 @@ func V1() *chi.Mux {
 
 	for _, val := range proxy.Services {
 		r.Route(val.Path, func(r chi.Router) {
+			for _, plug := range val.Plugins {
+				if plug.Active {
+					r.Use(plugins.Middleware(plug.Name, plug.Config))
+				}
+			}
 			for _, url := range val.Urls {
 				switch url.Method {
 				case "GET":

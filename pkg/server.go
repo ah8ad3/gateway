@@ -1,10 +1,14 @@
 package pkg
 
 import (
+	"context"
 	"fmt"
 	"github.com/ah8ad3/gateway/plugins"
+	"github.com/go-chi/chi"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 	"time"
 
 	"github.com/ah8ad3/gateway/pkg/integrate"
@@ -26,7 +30,7 @@ func settings() {
 	// Require for auth Database staff
 	auth.OpenAuthCollection()
 
-	proxy.LoadServices()
+	proxy.LoadServices(true)
 	proxy.CheckServices(false)
 
 	integrate.LoadIntegration()
@@ -40,6 +44,10 @@ func settings() {
 
 // RUN for run server
 func RUN(ip string, port string) {
+	stop := make(chan os.Signal, 1)
+
+	signal.Notify(stop, os.Interrupt)
+
 	settings()
 	r := routes.V1()
 
@@ -52,10 +60,24 @@ func RUN(ip string, port string) {
 
 	listen := ip + ":" + port
 
-	fmt.Println("Server run at ", listen)
-	if err := http.ListenAndServe(listen, r); err != nil {
-		logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "critical", Description: err.Error()},
-			Pkg: "auth", Time: time.Now()})
-		log.Fatal(err)
-	}
+	hs := setup(listen, r)
+
+	go func() {
+		fmt.Println(fmt.Sprintf("Listening on http://%s\n", hs.Addr))
+
+		if err := hs.ListenAndServe(); err != http.ErrServerClosed {
+			log.Fatal(err.Error())
+		}
+	}()
+
+	<-stop
+
+	_ = hs.Shutdown(context.Background())
+}
+
+func setup(url string, r *chi.Mux) *http.Server {
+
+	hs := &http.Server{Addr: url, Handler: r}
+
+	return hs
 }
