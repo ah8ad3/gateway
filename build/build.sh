@@ -7,7 +7,7 @@ rm -f dist/gateway*
 
 # Check if VERSION variable available
 if [[ -z "$VERSION" ]]; then
-  VERSION="0.1-dev"
+  VERSION="0.1.0-alpha"
 fi
 
 echo "Building application version $VERSION"

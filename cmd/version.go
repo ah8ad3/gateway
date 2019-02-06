@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var version = "0.0-dev"
+var version = "0.0.0-alpha"
 
 // NewVersionCmd creates a new version command
 func NewVersionCmd(ctx context.Context) *cobra.Command {
