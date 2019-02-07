@@ -22,5 +22,5 @@ type Service struct {
 	Version     int
 	Description string
 	Urls        []URL
-	plugins     []plugins.Plugin
+	Plugins     []plugins.Plugin
 }

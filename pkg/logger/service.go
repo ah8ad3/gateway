@@ -2,8 +2,7 @@ package logger
 
 import (
 	"context"
-	"log"
-
+	"fmt"
 	"github.com/mongodb/mongo-go-driver/mongo"
 )
 
@@ -13,28 +12,37 @@ var Collection *mongo.Collection
 // DB poiner to mongoDB and can access from any where
 var DB *mongo.Database
 
+// Connect if db connected or not
+var Connect bool
+
 // OpenConnection function for open connection with mongodb once
 func OpenConnection() {
 	client, err := mongo.NewClient("mongodb://localhost:27017")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err.Error())
+		Connect = false
+	}else {
+		Connect = true
+		err = client.Connect(context.Background())
+
+		DB = client.Database("gateway")
+
+		Collection = DB.Collection("log")
 	}
-
-	err = client.Connect(context.Background())
-
-	DB = client.Database("gateway")
-
-	Collection = DB.Collection("log")
 }
 
 // SetUserLog set the middleware logs here
 func SetUserLog(log UserLog) {
-	_, _ = Collection.InsertOne(context.Background(), log)
+	if Connect {
+		_, _ = Collection.InsertOne(context.Background(), log)
+	}
 }
 
 // SetSysLog set the middleware logs here
 func SetSysLog(log SystemLog) {
-	_, _ = Collection.InsertOne(context.Background(), log)
+	if Connect {
+		_, _ = Collection.InsertOne(context.Background(), log)
+	}
 }
 
 // ShowLogs query the database
