@@ -1,6 +1,17 @@
 # Unreleased
-- REST for modifying services in progress
 
+## Added
+- REST for modifying services in progress
+- CLI for insert services and integrates into gateway
+
+## Updated
+- Every Plugin has a good template and services has their own plugins separate
+
+## Fixed
+- .env behavior as constant
+
+## Removed
+- MongoDB constant
 
 # 0.2
 
@@ -12,12 +23,8 @@
 - Api geo location info added
 - Aggregation added
 
-## Fixed
-
 ## Updated
 - Load balancer ability with round robin algorithm for services
-
-## Removed
 
 
 # 0.1
@@ -27,10 +34,3 @@
 - dynamic routes declaration for services added
 - logging added
 - .env added
-
-## Fixed
-
-## Updated
-
-## Removed
-

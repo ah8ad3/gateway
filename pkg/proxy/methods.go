@@ -38,17 +38,18 @@ func LoadServices(jsonData bool) {
 			fmt.Println("services.json cant match to Structure read the docs or act like template")
 			os.Exit(1)
 		}
+
+		// save data to db automatically after load
+		saveServices()
 	}else {
 		// this is how get info from db
 		_ = json.Unmarshal(db.GetProxies(), &Services)
 	}
 
 	for _, val := range Services {
+		SyncPlugins(val.Name)
 		fmt.Printf(WarningColor, fmt.Sprintf("Service %s Loaded \n", val.Name))
 	}
-
-	// save data to db automatically after load
-	saveServices()
 }
 
 // CheckServices function for check if service is available or not
@@ -84,15 +85,26 @@ func HealthCheck() {
 func AddPlugin(serviceName string, pluginName string, config map[string]interface{}) (string, bool) {
 	for id, val := range Services {
 		if val.Name == serviceName {
+			for idx, plug := range val.Plugins {
+				if plug.Name == pluginName {
+					if config != nil {
+						Services[id].Plugins[idx].Config = config
+						return "ok", true
+					}
+					return "plugin exist", false
+				}
+			}
+
 			plugin, err := plugins.AddPluginProxy(pluginName, true, config)
 			if err {
 				logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "log", Description: "plugin not found or name is empty"},
 					Time: time.Now(), Pkg: "proxy"})
 				return "plugin not found or name is empty", true
 			}
-			Services[id].plugins = append(Services[id].plugins, plugin)
-			saveServices()
+			Services[id].Plugins = append(Services[id].Plugins, plugin)
+
 			// save services after change automatically
+			saveServices()
 
 			return "ok", false
 		}
@@ -100,6 +112,26 @@ func AddPlugin(serviceName string, pluginName string, config map[string]interfac
 	logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "log", Description: "proxy not found"},
 		Time: time.Now(), Pkg: "proxy"})
 	return "proxy not found", true
+}
+
+// SyncPlugins after load from db, sync functions to struct cause method address after app execution not meaning
+// anything
+func SyncPlugins(proxyName string) {
+	for id, val := range Services{
+		if val.Name == proxyName {
+			for idx, plug := range val.Plugins {
+				mid := plugins.GetMiddleware(plug.Name)
+				if mid != nil {
+					Services[id].Plugins[idx].Middleware = mid
+				}
+			}
+		}
+	}
+}
+
+// RemovePlugin from proxy
+func RemovePlugin(serviceName string, pluginName string) (string, bool) {
+	return "", false
 }
 
 func saveServices() {

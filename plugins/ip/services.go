@@ -56,30 +56,32 @@ func getAPI(api string) *APIIP {
 	return apiInfo
 }
 
-// InfoMiddleware this must not use like this must implement
-func InfoMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		splitRoute := strings.Split(r.URL.Path, "/")
-		// extract server path from url
-		path := splitRoute[1]
+// Middleware this must not use like this must implement
+func Middleware(config map[string]interface{})func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			splitRoute := strings.Split(r.URL.Path, "/")
+			// extract server path from url
+			path := splitRoute[1]
 
-		// This method disabled now but must implement with goroutine later
-		//apiInfo := getAPI(r.RemoteAddr)
-		apiInfo := &APIIP{status: "fail"}
-		if apiInfo.status == "success" {
-			apiIP = append(apiIP, *apiInfo)
-			if isAPIBlock(path, r.RemoteAddr) {
-				http.Error(w, http.StatusText(403), http.StatusForbidden)
-				return
+			// This method disabled now but must implement with goroutine later
+			//apiInfo := getAPI(r.RemoteAddr)
+			apiInfo := &APIIP{status: "fail"}
+			if apiInfo.status == "success" {
+				apiIP = append(apiIP, *apiInfo)
+				if isAPIBlock(path, r.RemoteAddr) {
+					http.Error(w, http.StatusText(403), http.StatusForbidden)
+					return
+				}
+			} else {
+				logger.SetUserLog(logger.UserLog{Time: time.Now(), IP: r.RemoteAddr, RequestURL: r.URL.Path,
+					Log: logger.Log{Event: "critical", Description: "api ip not respond correct response at this"}})
+				if isAPIBlock(path, r.RemoteAddr) {
+					http.Error(w, http.StatusText(403), http.StatusForbidden)
+					return
+				}
 			}
-		} else {
-			logger.SetUserLog(logger.UserLog{Time: time.Now(), IP: r.RemoteAddr, RequestURL: r.URL.Path,
-				Log: logger.Log{Event: "critical", Description: "api ip not respond correct response at this"}})
-			if isAPIBlock(path, r.RemoteAddr) {
-				http.Error(w, http.StatusText(403), http.StatusForbidden)
-				return
-			}
-		}
-		next.ServeHTTP(w, r)
-	})
+			next.ServeHTTP(w, r)
+		})
+	}
 }

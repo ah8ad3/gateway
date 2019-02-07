@@ -30,13 +30,13 @@ func settings() {
 	// Require for auth Database staff
 	auth.OpenAuthCollection()
 
-	proxy.LoadServices(true)
+	// register all plugins to gateway
+	plugins.RegisterPlugins()
+
+	proxy.LoadServices(false)
 	proxy.CheckServices(false)
 
 	integrate.LoadIntegration()
-
-	// register all plugins to gateway
-	plugins.RegisterPlugins()
 
 	// check all service available every one hour
 	go proxy.HealthCheck()

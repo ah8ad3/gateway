@@ -1,6 +1,7 @@
 package plugins
 
 import (
+	"github.com/ah8ad3/gateway/plugins/ip"
 	"log"
 	"net/http"
 	"time"
@@ -14,7 +15,7 @@ type Plugin struct {
 	Name   string
 	Active bool
 	Config map[string]interface{}
-	Middleware func(config map[string]interface{}) func(handler http.Handler) http.Handler
+	Middleware func(config map[string]interface{}) func(handler http.Handler) http.Handler `json:"-"`
 }
 
 // Plugins all plugins that this gateway have and can set to proxies
@@ -44,7 +45,10 @@ func AddPluginProxy(name string, active bool, conf map[string]interface{}) (Plug
 
 	for _, val := range Plugins {
 		if val.Name == name {
-			return Plugin{Name: val.Name, Active: active, Config: conf}, false
+			if conf == nil {
+				conf = val.Config
+			}
+			return Plugin{Name: val.Name, Active: active, Config: conf, Middleware: val.Middleware}, false
 		}
 	}
 
@@ -55,14 +59,25 @@ func AddPluginProxy(name string, active bool, conf map[string]interface{}) (Plug
 func RegisterPlugins() {
 	// add your'e plugin here
 	plugs = append(plugs, ratelimitter.RegisterNewPlugin)
+	plugs = append(plugs, ip.RegisterNewPlugin)
 
 	for id := range plugs {
-		name, active, config := plugs[id].(func()(string, bool, map[string]interface{}))()
+		name, active, config, middle := plugs[id].(func()(string, bool, map[string]interface{}, func(config map[string]interface{}) func(handler http.Handler) http.Handler))()
 
-		err := Plugin{Name: name, Active: active, Config: config}.SetUPPlugin()
+		err := Plugin{Name: name, Active: active, Config: config, Middleware: middle}.SetUPPlugin()
 
 		if err{
 			log.Fatal("name of plugin cant be empty")
 		}
 	}
+}
+
+// GetMiddleware use in SyncMiddleware for proxy after load of db
+func GetMiddleware(pluginName string) func(config map[string]interface{}) func(handler http.Handler) http.Handler {
+	for _, val := range Plugins {
+		if val.Name == pluginName {
+			return val.Middleware
+		}
+	}
+	return nil
 }
