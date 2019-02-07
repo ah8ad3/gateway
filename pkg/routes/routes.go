@@ -28,10 +28,10 @@ func V1() *chi.Mux {
 	r := chi.NewRouter()
 
 	// Rate limiter per user
-	r.Use(ratelimitter.LimitMiddleware)
+	//r.Use(ratelimitter.TestMiddle(10))
 
 	// Ip block Middleware
-	r.Use(ip.InfoMiddleware)
+	r.Use(ip.Middleware(nil))
 
 	r.Get("/", admin.Welcome)
 
@@ -47,6 +47,12 @@ func V1() *chi.Mux {
 
 	for _, val := range proxy.Services {
 		r.Route(val.Path, func(r chi.Router) {
+			for _, plug := range val.Plugins {
+
+				if plug.Active {
+					r.Use(plug.Middleware(plug.Config))
+				}
+			}
 			for _, url := range val.Urls {
 				switch url.Method {
 				case "GET":

@@ -51,29 +51,32 @@ func CleanupVisitors() {
 	for {
 		time.Sleep(time.Minute)
 		mtx.Lock()
-		for ip, v := range visitors {
+		for id, v := range visitors {
 			if time.Now().Sub(v.lastSeen) > 3*time.Minute {
-				delete(visitors, ip)
+				delete(visitors, id)
 			}
 		}
 		mtx.Unlock()
 	}
 }
 
-// LimitMiddleware to check for the too many request every too many requests
-// will ban for 1 minutes
-func LimitMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		limiter := getVisitor(r.RemoteAddr)
-		if limiter.Allow() == false {
-			splitRoute := strings.Split(r.URL.Path, "/")
-			// extract server path from url
-			path := splitRoute[1]
-			ip.AddBlockList(r.RemoteAddr, path, time.Duration(time.Minute*1), false)
-			http.Error(w, http.StatusText(429), http.StatusTooManyRequests)
-			return
-		}
+// Middleware to check for the too many request every too many requests
+func Middleware(config map[string]interface{}) func(handler http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			limiter := getVisitor(r.RemoteAddr)
+			if limiter.Allow() == false {
 
-		next.ServeHTTP(w, r)
-	})
+				splitRoute := strings.Split(r.URL.Path, "/")
+				// extract server path from url
+				path := splitRoute[1]
+				ip.AddBlockList(r.RemoteAddr, path, time.Duration(time.Second*
+					time.Duration(config["block_time"].(float64))), false)
+				http.Error(w, http.StatusText(429), http.StatusTooManyRequests)
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
 }

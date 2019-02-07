@@ -8,7 +8,7 @@
 
 ---
 
-**Note:** This project may not be youre ideal gateway, we do our best if you want to help, we appreciate that
+**Note:** This project are in ReWrite mode for standard behavior, may not be stable
 
 ---
 
@@ -25,15 +25,16 @@ This is an simple gateway written in Golang
 - Health check of services every 1 hours can be modified
 - Simple Rate limiter plugin per visitor
 - Ip block list
-- REST for modifying services in progress
 - Api geo location info
 - Aggregate requests dynamically by define in integrate.json by template
+- DB manager with encryption to manage proxy and plugins
+- Middleware per proxy
 
 # Installation
 ### Manual
 ```bash
-    git clone https://github.com/ah8ad3/gateway
-    cd gateway
+    go get -t -v https://github.com/ah8ad3/gateway
+    cd $GOPATH/src/github.com/ah8ad3/gateway
     make build
     ./dist/gateway run
 ```
@@ -42,8 +43,10 @@ This is an simple gateway written in Golang
 Soon...
 
 # TODO
-- Plugins separate for each service
+- REST for modifying services in progress
+- Replace mongoDB, .env with another toy
 - ApiInfo async
+- Tests
 - working on crud requests fo RouteV1
 - RoutesV2 to prefix route and act like bridge, rewrite route url
 - some plugins: intelligent load balancer, ssl support, simple monitoring,
@@ -52,6 +55,8 @@ cache for gateway, nginx communication, kubernetes communication
 # Constants
 - services work with HTTP/1.1
 - RoutesV1
+- env
+
 ----
 # Routing
 

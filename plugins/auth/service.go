@@ -53,12 +53,19 @@ func comparePasswords(hashedPwd string, plainPwd []byte) bool {
 
 // OpenAuthCollection open the collection of mongoDB called auth
 func OpenAuthCollection() {
-	collection = logger.DB.Collection("auth")
+	if logger.Connect {
+		collection = logger.DB.Collection("auth")
+	}
 }
 
 // CheckJwt if token is JWT and have time
 func CheckJwt(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	if logger.Connect == false {
+		w.WriteHeader(500)
+		_, _ = w.Write([]byte(`{"error": "DataBase not connected, please check connection"}`))
+		return
+	}
 	_token := r.Header.Get("Authorization")
 	if _token == "" {
 		w.WriteHeader(400)
@@ -89,6 +96,12 @@ func CheckJwt(w http.ResponseWriter, r *http.Request) {
 // SignJWT function to create jwt token
 func SignJWT(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
+	if logger.Connect == false {
+		w.WriteHeader(500)
+		_, _ = w.Write([]byte(`{"error": "DataBase not connected, please check connection"}`))
+		return
+	}
 
 	_ = r.ParseForm()
 	username := strings.Join(r.Form["username"], "")
@@ -149,6 +162,13 @@ func createTokenString(user User) string {
 // RegisterUser function use in V1 router for sign up user
 func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
+	if logger.Connect == false {
+		w.WriteHeader(500)
+		_, _ = w.Write([]byte(`{"error": "DataBase not connected, please check connection"}`))
+		return
+	}
+
 	_ = r.ParseForm()
 	username := strings.Join(r.Form["username"], "")
 	password := strings.Join(r.Form["password"], "")

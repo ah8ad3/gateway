@@ -18,7 +18,7 @@
 
 dist/
 
-.exe
+*.exe
 *.test
 *.prof
 gin-bin
