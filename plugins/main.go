@@ -16,6 +16,7 @@ type Plugin struct {
 	Active bool
 	Config map[string]interface{}
 	Middleware func(config map[string]interface{}) func(handler http.Handler) http.Handler `json:"-"`
+	Priority int
 }
 
 // Plugins all plugins that this gateway have and can set to proxies
@@ -62,9 +63,9 @@ func RegisterPlugins() {
 	plugs = append(plugs, ip.RegisterNewPlugin)
 
 	for id := range plugs {
-		name, active, config, middle := plugs[id].(func()(string, bool, map[string]interface{}, func(config map[string]interface{}) func(handler http.Handler) http.Handler))()
+		name, active, config, middle, priority := plugs[id].(func()(string, bool, map[string]interface{}, func(config map[string]interface{}) func(handler http.Handler) http.Handler, int))()
 
-		err := Plugin{Name: name, Active: active, Config: config, Middleware: middle}.SetUPPlugin()
+		err := Plugin{Name: name, Active: active, Config: config, Middleware: middle, Priority: priority}.SetUPPlugin()
 
 		if err{
 			log.Fatal("name of plugin cant be empty")

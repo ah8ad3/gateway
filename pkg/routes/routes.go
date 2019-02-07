@@ -3,7 +3,9 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ah8ad3/gateway/pkg/rest"
 	"net/http"
+	"sort"
 	"strings"
 	"time"
 
@@ -31,12 +33,13 @@ func V1() *chi.Mux {
 	//r.Use(ratelimitter.TestMiddle(10))
 
 	// Ip block Middleware
-	r.Use(ip.Middleware(nil))
+	//r.Use(ip.Middleware(nil))
 
 	r.Get("/", admin.Welcome)
 
 	r.Route("/admin", func(r chi.Router) {
-		r.Get("/service", admin.GETServices)
+		r.Get("/service", rest.GETServices)
+		r.Post("/service", rest.PostService)
 	})
 
 	r.Route("/auth", func(r chi.Router) {
@@ -45,8 +48,14 @@ func V1() *chi.Mux {
 		r.Post("/check", auth.CheckJwt)
 	})
 
-	for _, val := range proxy.Services {
+	for id, val := range proxy.Services {
 		r.Route(val.Path, func(r chi.Router) {
+
+			// Sort all middleware by Priority for performance staff
+			sort.Slice(proxy.Services[id].Plugins, func(i, j int) bool {
+				return proxy.Services[id].Plugins[i].Priority < proxy.Services[id].Plugins[j].Priority
+			})
+
 			for _, plug := range val.Plugins {
 
 				if plug.Active {
