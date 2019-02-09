@@ -3,6 +3,7 @@ package pkg
 import (
 	"context"
 	"fmt"
+	"github.com/ah8ad3/gateway/pkg/db"
 	"github.com/ah8ad3/gateway/plugins"
 	"github.com/go-chi/chi"
 	"log"
@@ -44,6 +45,12 @@ func settings() {
 
 // RUN for run server
 func RUN(ip string, port string) {
+	str, _ := db.LoadSecretKey()
+	db.SecretKey = str
+	if db.SecretKey == "" {
+		log.Fatal("Secret Key not Found, generate it by\n  \t gateway secret")
+	}
+
 	stop := make(chan os.Signal, 1)
 
 	signal.Notify(stop, os.Interrupt)

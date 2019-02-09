@@ -22,6 +22,8 @@ with your API and when things go wrong.`,
 
 	cmd.AddCommand(NewVersionCmd(ctx))
 	cmd.AddCommand(NewServerCmd(ctx))
+	cmd.AddCommand(NewLoadCmd(ctx))
+	cmd.AddCommand(NewSecretKeyCmd(ctx))
 
 	return cmd
 }

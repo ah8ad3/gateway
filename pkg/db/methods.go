@@ -6,6 +6,7 @@ import (
 	"crypto/md5"
 	"crypto/rand"
 	"encoding/hex"
+	"fmt"
 	"github.com/ah8ad3/gateway/pkg/logger"
 	"io"
 	"io/ioutil"
@@ -13,6 +14,9 @@ import (
 	"os"
 	"time"
 )
+
+// SecretKey for security issue
+var SecretKey string
 
 // InsertProxy func for insert all proxy that been Marshal and encrypt and save it to db/proxy.bin file
 func InsertProxy(proxies []byte) {
@@ -132,7 +136,7 @@ func decrypt(data []byte, passphrase string) []byte {
 }
 
 func encryptData(data []byte) []byte {
-	pass := os.Getenv("SECRET_KEY")
+	pass := SecretKey
 	if pass == "" {
 		log.Fatal("Secret Key can not be empty, for security issue")
 	}
@@ -141,10 +145,54 @@ func encryptData(data []byte) []byte {
 }
 
 func decryptData(data []byte) []byte {
-	pass := os.Getenv("SECRET_KEY")
+	pass := SecretKey
 	if pass == "" {
 		log.Fatal("Secret Key can not be empty, for security issue")
 	}
 
 	return decrypt(data, pass)
+}
+
+func GenerateSecretKey() {
+	key := make([]byte, 16)
+
+	_, err := rand.Read(key)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	sec := fmt.Sprintf("%s", key)
+
+	isSaved := saveSecretKey(sec)
+	if isSaved {
+		SecretKey = sec
+	} else {
+		str, found := LoadSecretKey()
+		if found {
+			SecretKey = str
+		} else {
+			GenerateSecretKey()
+		}
+	}
+}
+
+// saveSecretKey save it to file
+func saveSecretKey(secret string) bool{
+	if _, err := ioutil.ReadFile("db/secret.bin"); err != nil {
+		err := ioutil.WriteFile("db/secret.bin", []byte(secret), 0644)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		return true
+	}
+	return false
+}
+
+// LoadSecretKey load it to SecretKey
+func LoadSecretKey() (string, bool){
+	data, err := ioutil.ReadFile("db/secret.bin")
+	if err != nil {
+		return "", false
+	}
+	return fmt.Sprintf("%s", data), true
 }

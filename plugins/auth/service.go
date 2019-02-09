@@ -3,8 +3,8 @@ package auth
 import (
 	"context"
 	"fmt"
+	"github.com/ah8ad3/gateway/pkg/db"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
@@ -74,14 +74,14 @@ func CheckJwt(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token, _ := jwt.Parse(_token, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("SECRET_KEY")), nil
+		return []byte(db.SecretKey), nil
 	})
 	// When using `Parse`, the result `Claims` would be a map.
 
 	// In another way, you can decode token to your struct, which needs to satisfy `jwt.StandardClaims`
 	user := JWT{}
 	token, _ = jwt.ParseWithClaims(_token, &user, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("SECRET_KEY")), nil
+		return []byte(db.SecretKey), nil
 	})
 	if token.Valid {
 		w.WriteHeader(200)
@@ -150,7 +150,7 @@ func createTokenString(user User) string {
 	})
 
 	// token -> string. Only server knows this secret
-	_token, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
+	_token, err := token.SignedString([]byte(db.SecretKey))
 	if err != nil {
 		logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "critical", Description: err.Error()},
 			Pkg: "auth", Time: time.Now()})

@@ -18,8 +18,8 @@ func getServices() []byte {
 func Welcome(w http.ResponseWriter, r *http.Request) {
 	_ = r
 
-	str, _ := proxy.AddPlugin("service1", "rateLimiter", nil)
-	_, _ = w.Write([]byte(str))
+	//str, _ := proxy.AddPlugin("service1", "rateLimiter", nil)
+	_, _ = w.Write([]byte("Welcome To Gateway"))
 }
 
 // GETServices get all services in admin mode

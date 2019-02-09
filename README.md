@@ -36,7 +36,9 @@ This is an simple gateway written in Golang
     go get -t -v https://github.com/ah8ad3/gateway
     cd $GOPATH/src/github.com/ah8ad3/gateway
     make build
-    ./dist/gateway run
+    ./dist/gateway secret   #for generate secret key
+    ./dist/gateway load     # for load proxies from template json file
+    ./dist/gateway run      # to run server
 ```
 
 ### Docker
@@ -44,7 +46,6 @@ Soon...
 
 # TODO
 - REST for modifying services in progress
-- Replace mongoDB, .env with another toy
 - ApiInfo async
 - Tests
 - working on crud requests fo RouteV1
@@ -55,7 +56,6 @@ cache for gateway, nginx communication, kubernetes communication
 # Constants
 - services work with HTTP/1.1
 - RoutesV1
-- env
 
 ----
 # Routing

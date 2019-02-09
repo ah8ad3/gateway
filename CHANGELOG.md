@@ -12,6 +12,7 @@
 
 ## Removed
 - MongoDB constant
+- .env not use anymore
 
 # 0.2
 
