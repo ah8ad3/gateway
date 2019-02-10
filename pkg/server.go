@@ -4,29 +4,20 @@ import (
 	"context"
 	"fmt"
 	"github.com/ah8ad3/gateway/pkg/db"
+	"github.com/ah8ad3/gateway/pkg/integrate"
+	"github.com/ah8ad3/gateway/pkg/logger"
+	"github.com/ah8ad3/gateway/pkg/proxy"
+	"github.com/ah8ad3/gateway/pkg/routes"
 	"github.com/ah8ad3/gateway/plugins"
+	"github.com/ah8ad3/gateway/plugins/auth"
 	"github.com/go-chi/chi"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
-	"time"
-
-	"github.com/ah8ad3/gateway/pkg/integrate"
-	"github.com/ah8ad3/gateway/pkg/logger"
-	"github.com/ah8ad3/gateway/pkg/proxy"
-	"github.com/ah8ad3/gateway/pkg/routes"
-	"github.com/ah8ad3/gateway/plugins/auth"
-	"github.com/joho/godotenv"
 )
 
 func settings() {
-	err := godotenv.Load()
-	if err != nil {
-		logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "critical", Description: err.Error()},
-			Pkg: "main", Time: time.Now()})
-		log.Fatal("Error loading .env file")
-	}
 	logger.OpenConnection()
 	// Require for auth Database staff
 	auth.OpenAuthCollection()

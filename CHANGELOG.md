@@ -1,20 +1,27 @@
 # Unreleased
 
 ## Added
+
+## Updated
+
+## Fixed
+
+## Removed
+
+# 0.3.0
+
+## Added
 - REST for modifying services in progress
 - CLI for insert services and integrates into gateway
 
 ## Updated
 - Every Plugin has a good template and services has their own plugins separate
 
-## Fixed
-- .env behavior as constant
-
 ## Removed
 - MongoDB constant
-- .env not use anymore
+- .env
 
-# 0.2
+# 0.2.0
 
 ## Added
 - JWT and register added
@@ -28,7 +35,7 @@
 - Load balancer ability with round robin algorithm for services
 
 
-# 0.1
+# 0.1.0
 
 ## Added
 - services in services.json file added

@@ -176,16 +176,29 @@ func GenerateSecretKey() {
 	}
 }
 
+func exists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil { return true, nil }
+	if os.IsNotExist(err) { return false, nil }
+	return true, err
+}
+
 // saveSecretKey save it to file
 func saveSecretKey(secret string) bool{
-	if _, err := ioutil.ReadFile("db/secret.bin"); err != nil {
-		err := ioutil.WriteFile("db/secret.bin", []byte(secret), 0644)
-		if err != nil {
-			log.Fatal(err.Error())
+	exist, _ := exists("db/")
+	if exist {
+		if _, err := ioutil.ReadFile("db/secret.bin"); err != nil {
+			err := ioutil.WriteFile("db/secret.bin", []byte(secret), 0644)
+			if err != nil {
+				log.Fatal(err.Error())
+			}
+			return true
 		}
-		return true
+		return false
+	} else {
+		_ = os.Mkdir("db/", 0755)
+		return saveSecretKey(secret)
 	}
-	return false
 }
 
 // LoadSecretKey load it to SecretKey
