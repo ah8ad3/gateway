@@ -18,17 +18,34 @@ import (
 // SecretKey for security issue
 var SecretKey string
 
+var proxyDir, pluginDir, secretDir, dbDir string
+
+func init() {
+	test := os.Getenv("TEST")
+	if test == "1" {
+		proxyDir = "./../../db/proxy.bin"
+		pluginDir = "./../../db/plugin.bin"
+		secretDir = "./../../db/secret.bin"
+		dbDir = "./../../db/"
+	} else {
+		proxyDir = "db/proxy.bin"
+		pluginDir = "db/plugin.bin"
+		secretDir = "db/secret.bin"
+		dbDir = "db/"
+	}
+}
+
 // InsertProxy func for insert all proxy that been Marshal and encrypt and save it to db/proxy.bin file
 func InsertProxy(proxies []byte) {
-	if _, err := ioutil.ReadFile("db/proxy.bin"); err != nil {
+	if _, err := ioutil.ReadFile(proxyDir); err != nil {
 		proxies = encryptData(proxies)
-		err := ioutil.WriteFile("db/proxy.bin", proxies, 0644)
+		err := ioutil.WriteFile(proxyDir, proxies, 0644)
 		if err != nil {
 			logger.SetSysLog(logger.SystemLog{Pkg: "db", Time: time.Now(), Log: logger.Log{Event: "critical",
 				Description: err.Error()}})
 		}
 	}else {
-		if err = os.Remove("db/proxy.bin"); err != nil {
+		if err = os.Remove(proxyDir); err != nil {
 			logger.SetSysLog(logger.SystemLog{Pkg: "db", Time: time.Now(), Log: logger.Log{Event: "critical",
 				Description: err.Error()}})
 			log.Fatal("Cant remove proxy file")
@@ -41,15 +58,15 @@ func InsertProxy(proxies []byte) {
 
 // InsertPlugins func for insert all plugins that been Marshal and encrypt and save it to db/plugin.bin file
 func InsertPlugins(plugins []byte) {
-	if _, err := ioutil.ReadFile("db/plugin.bin"); err != nil {
+	if _, err := ioutil.ReadFile(pluginDir); err != nil {
 		plugins = encryptData(plugins)
-		err := ioutil.WriteFile("db/plugin.bin", plugins, 0644)
+		err := ioutil.WriteFile(pluginDir, plugins, 0644)
 		if err != nil {
 			logger.SetSysLog(logger.SystemLog{Pkg: "db", Time: time.Now(), Log: logger.Log{Event: "critical",
 				Description: err.Error()}})
 		}
 	}else {
-		if err = os.Remove("db/plugin.bin"); err != nil {
+		if err = os.Remove(pluginDir); err != nil {
 			logger.SetSysLog(logger.SystemLog{Pkg: "db", Time: time.Now(), Log: logger.Log{Event: "critical",
 				Description: err.Error()}})
 			log.Fatal("Cant remove plugin file")
@@ -62,7 +79,7 @@ func InsertPlugins(plugins []byte) {
 
 // GetProxies to decrypt and get all saved proxy as bson
 func GetProxies() []byte {
-	data, err := ioutil.ReadFile("db/proxy.bin")
+	data, err := ioutil.ReadFile(proxyDir)
 	if err != nil {
 		logger.SetSysLog(logger.SystemLog{Pkg: "db", Time: time.Now(), Log: logger.Log{Event: "critical",
 			Description: err.Error()}})
@@ -75,7 +92,7 @@ func GetProxies() []byte {
 
 // GetPlugins to decrypt and get all saved plugins as bson
 func GetPlugins() []byte {
-	data, err := ioutil.ReadFile("db/plugin.bin")
+	data, err := ioutil.ReadFile(pluginDir)
 	if err != nil {
 		logger.SetSysLog(logger.SystemLog{Pkg: "db", Time: time.Now(), Log: logger.Log{Event: "critical",
 			Description: err.Error()}})
@@ -185,10 +202,10 @@ func exists(path string) (bool, error) {
 
 // saveSecretKey save it to file
 func saveSecretKey(secret string) bool{
-	exist, _ := exists("db/")
+	exist, _ := exists(dbDir)
 	if exist {
-		if _, err := ioutil.ReadFile("db/secret.bin"); err != nil {
-			err := ioutil.WriteFile("db/secret.bin", []byte(secret), 0644)
+		if _, err := ioutil.ReadFile(secretDir); err != nil {
+			err := ioutil.WriteFile(secretDir, []byte(secret), 0644)
 			if err != nil {
 				log.Fatal(err.Error())
 			}
@@ -196,14 +213,14 @@ func saveSecretKey(secret string) bool{
 		}
 		return false
 	} else {
-		_ = os.Mkdir("db/", 0755)
+		_ = os.Mkdir(dbDir, 0755)
 		return saveSecretKey(secret)
 	}
 }
 
 // LoadSecretKey load it to SecretKey
 func LoadSecretKey() (string, bool){
-	data, err := ioutil.ReadFile("db/secret.bin")
+	data, err := ioutil.ReadFile(secretDir)
 	if err != nil {
 		return "", false
 	}

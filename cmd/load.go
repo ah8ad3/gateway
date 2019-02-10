@@ -5,9 +5,20 @@ import (
 	"fmt"
 	"github.com/ah8ad3/gateway/pkg/db"
 	"github.com/ah8ad3/gateway/pkg/proxy"
+	"os"
 
 	"github.com/spf13/cobra"
 )
+
+var serLocation string
+
+func init() {
+	if os.Getenv("TEST") == "1" {
+		serLocation = "./../services.json"
+	} else {
+		serLocation = "services.json"
+	}
+}
 
 // NewLoadCmd creates a new version command
 func NewLoadCmd(ctx context.Context) *cobra.Command {
@@ -18,7 +29,7 @@ func NewLoadCmd(ctx context.Context) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			str, _ :=db.LoadSecretKey()
 			db.SecretKey = str
-			proxy.LoadServices(true)
+			proxy.LoadServices(true, serLocation)
 			fmt.Printf("Services loaded successfully \n")
 		},
 	}

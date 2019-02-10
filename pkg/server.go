@@ -17,6 +17,16 @@ import (
 	"os/signal"
 )
 
+var serLocation string
+
+func init() {
+	if os.Getenv("TEST") == "1" {
+		serLocation = "./../services.json"
+	} else {
+		serLocation = "services.json"
+	}
+}
+
 func settings() {
 	logger.OpenConnection()
 	// Require for auth Database staff
@@ -25,7 +35,7 @@ func settings() {
 	// register all plugins to gateway
 	plugins.RegisterPlugins()
 
-	proxy.LoadServices(false)
+	proxy.LoadServices(false, serLocation)
 	proxy.CheckServices(false)
 
 	integrate.LoadIntegration()

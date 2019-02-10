@@ -26,9 +26,10 @@ const (
 var Services []Service
 
 // LoadServices function for loading services from json file
-func LoadServices(jsonData bool) {
+func LoadServices(jsonData bool, serLocation string) {
 	if jsonData {
-		data, err := ioutil.ReadFile("services.json")
+		data, err := ioutil.ReadFile(serLocation)
+
 		if err != nil {
 			log.Fatal(err)
 			os.Exit(1)

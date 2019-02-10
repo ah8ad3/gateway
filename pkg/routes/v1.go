@@ -76,7 +76,7 @@ func findService(path string) string {
 		}
 	}
 	logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "critical",
-		Description: fmt.Sprintf("bad path check services ", path)},
+		Description: fmt.Sprintf("bad path check services %s", path)},
 		Pkg: "auth", Time: time.Now()})
 	//log.Fatal("bad path check services ", path)
 	return ""
