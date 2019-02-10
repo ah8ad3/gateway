@@ -31,6 +31,10 @@ This is an simple gateway written in Golang
 - Middleware per proxy
 
 # Installation
+### Release
+you can find first type document [here](https://github.com/ah8ad3/gateway/blob/master/doc/README.md)
+for use released versions
+
 ### Manual
 ```bash
     go get -t -v https://github.com/ah8ad3/gateway
@@ -45,7 +49,7 @@ This is an simple gateway written in Golang
 Soon...
 
 # TODO
-- REST for modifying services in progress
+- REST for modifying services in progress **important
 - ApiInfo async
 - Tests
 - working on crud requests fo RouteV1
