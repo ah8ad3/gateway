@@ -3,9 +3,10 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"os"
+
 	"github.com/ah8ad3/gateway/pkg/db"
 	"github.com/ah8ad3/gateway/pkg/proxy"
-	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -27,7 +28,7 @@ func NewLoadCmd(ctx context.Context) *cobra.Command {
 		Short:   "load services from services.json",
 		Aliases: []string{"l"},
 		Run: func(cmd *cobra.Command, args []string) {
-			str, _ :=db.LoadSecretKey()
+			str, _ := db.LoadSecretKey()
 			db.SecretKey = str
 			proxy.LoadServices(true, serLocation)
 			fmt.Printf("Services loaded successfully \n")

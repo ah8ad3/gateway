@@ -57,7 +57,7 @@ func getAPI(api string) *APIIP {
 }
 
 // Middleware this must not use like this must implement
-func Middleware(config map[string]interface{})func(next http.Handler) http.Handler {
+func Middleware(config map[string]interface{}) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			splitRoute := strings.Split(r.URL.Path, "/")

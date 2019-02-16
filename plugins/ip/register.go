@@ -10,7 +10,7 @@ func RegisterNewPlugin() (string, bool, map[string]interface{}, func(config map[
 	return "ipBlocker", true, config, Middleware
 }
 
-func confTemplate(config map[string]interface{}) map[string]interface{}{
+func confTemplate(config map[string]interface{}) map[string]interface{} {
 	config["nothing"] = nil
 
 	return config

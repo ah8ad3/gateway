@@ -3,6 +3,7 @@ package logger
 import (
 	"context"
 	"fmt"
+
 	"github.com/mongodb/mongo-go-driver/mongo"
 )
 
@@ -21,7 +22,7 @@ func OpenConnection() {
 	if err != nil {
 		fmt.Println(err.Error())
 		Connect = false
-	}else {
+	} else {
 		Connect = true
 		err = client.Connect(context.Background())
 

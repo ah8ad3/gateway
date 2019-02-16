@@ -7,12 +7,13 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
-	"github.com/ah8ad3/gateway/pkg/logger"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"time"
+
+	"github.com/ah8ad3/gateway/pkg/logger"
 )
 
 // SecretKey for security issue
@@ -44,7 +45,7 @@ func InsertProxy(proxies []byte) {
 			logger.SetSysLog(logger.SystemLog{Pkg: "db", Time: time.Now(), Log: logger.Log{Event: "critical",
 				Description: err.Error()}})
 		}
-	}else {
+	} else {
 		if err = os.Remove(proxyDir); err != nil {
 			logger.SetSysLog(logger.SystemLog{Pkg: "db", Time: time.Now(), Log: logger.Log{Event: "critical",
 				Description: err.Error()}})
@@ -65,7 +66,7 @@ func InsertPlugins(plugins []byte) {
 			logger.SetSysLog(logger.SystemLog{Pkg: "db", Time: time.Now(), Log: logger.Log{Event: "critical",
 				Description: err.Error()}})
 		}
-	}else {
+	} else {
 		if err = os.Remove(pluginDir); err != nil {
 			logger.SetSysLog(logger.SystemLog{Pkg: "db", Time: time.Now(), Log: logger.Log{Event: "critical",
 				Description: err.Error()}})
@@ -195,13 +196,17 @@ func GenerateSecretKey() {
 
 func exists(path string) (bool, error) {
 	_, err := os.Stat(path)
-	if err == nil { return true, nil }
-	if os.IsNotExist(err) { return false, nil }
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
 	return true, err
 }
 
 // saveSecretKey save it to file
-func saveSecretKey(secret string) bool{
+func saveSecretKey(secret string) bool {
 	exist, _ := exists(dbDir)
 	if exist {
 		if _, err := ioutil.ReadFile(secretDir); err != nil {
@@ -219,7 +224,7 @@ func saveSecretKey(secret string) bool{
 }
 
 // LoadSecretKey load it to SecretKey
-func LoadSecretKey() (string, bool){
+func LoadSecretKey() (string, bool) {
 	data, err := ioutil.ReadFile(secretDir)
 	if err != nil {
 		return "", false

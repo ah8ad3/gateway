@@ -10,7 +10,7 @@ func RegisterNewPlugin() (string, bool, map[string]interface{}, func(config map[
 	return "rateLimiter", true, config, Middleware
 }
 
-func confTemplate(config map[string]interface{}) map[string]interface{}{
+func confTemplate(config map[string]interface{}) map[string]interface{} {
 	config["block_time"] = 60
 	config["rps"] = 5
 

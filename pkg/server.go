@@ -3,6 +3,11 @@ package pkg
 import (
 	"context"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+
 	"github.com/ah8ad3/gateway/pkg/db"
 	"github.com/ah8ad3/gateway/pkg/integrate"
 	"github.com/ah8ad3/gateway/pkg/logger"
@@ -11,10 +16,6 @@ import (
 	"github.com/ah8ad3/gateway/plugins"
 	"github.com/ah8ad3/gateway/plugins/auth"
 	"github.com/go-chi/chi"
-	"log"
-	"net/http"
-	"os"
-	"os/signal"
 )
 
 var serLocation string

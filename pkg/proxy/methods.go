@@ -3,13 +3,14 @@ package proxy
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ah8ad3/gateway/pkg/db"
-	"github.com/ah8ad3/gateway/plugins"
 	"io/ioutil"
 	"log"
 	"net"
 	"os"
 	"time"
+
+	"github.com/ah8ad3/gateway/pkg/db"
+	"github.com/ah8ad3/gateway/plugins"
 
 	"github.com/ah8ad3/gateway/pkg/logger"
 )
@@ -42,7 +43,7 @@ func LoadServices(jsonData bool, serLocation string) {
 
 		// save data to db automatically after load
 		saveServices()
-	}else {
+	} else {
 		// this is how get info from db
 		_ = json.Unmarshal(db.GetProxies(), &Services)
 	}
@@ -118,7 +119,7 @@ func AddPlugin(serviceName string, pluginName string, config map[string]interfac
 // SyncPlugins after load from db, sync functions to struct cause method address after app execution not meaning
 // anything
 func SyncPlugins(proxyName string) {
-	for id, val := range Services{
+	for id, val := range Services {
 		if val.Name == proxyName {
 			for idx, plug := range val.Plugins {
 				mid := plugins.GetMiddleware(plug.Name)

@@ -1,8 +1,9 @@
 package proxy
 
 import (
-	"github.com/ah8ad3/gateway/pkg/db"
 	"testing"
+
+	"github.com/ah8ad3/gateway/pkg/db"
 )
 
 func TestLoadServices(t *testing.T) {

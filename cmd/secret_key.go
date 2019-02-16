@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+
 	"github.com/ah8ad3/gateway/pkg/db"
 	"github.com/spf13/cobra"
 )

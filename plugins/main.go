@@ -1,10 +1,11 @@
 package plugins
 
 import (
-	"github.com/ah8ad3/gateway/plugins/ip"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/ah8ad3/gateway/plugins/ip"
 
 	"github.com/ah8ad3/gateway/pkg/logger"
 	"github.com/ah8ad3/gateway/plugins/ratelimitter"
@@ -12,9 +13,9 @@ import (
 
 // Plugin simple struct for plugins that define for service
 type Plugin struct {
-	Name   string
-	Active bool
-	Config map[string]interface{}
+	Name       string
+	Active     bool
+	Config     map[string]interface{}
 	Middleware func(config map[string]interface{}) func(handler http.Handler) http.Handler `json:"-"`
 }
 
@@ -62,11 +63,11 @@ func RegisterPlugins() {
 	plugs = append(plugs, ip.RegisterNewPlugin)
 
 	for id := range plugs {
-		name, active, config, middle := plugs[id].(func()(string, bool, map[string]interface{}, func(config map[string]interface{}) func(handler http.Handler) http.Handler))()
+		name, active, config, middle := plugs[id].(func() (string, bool, map[string]interface{}, func(config map[string]interface{}) func(handler http.Handler) http.Handler))()
 
 		err := Plugin{Name: name, Active: active, Config: config, Middleware: middle}.SetUPPlugin()
 
-		if err{
+		if err {
 			log.Fatal("name of plugin cant be empty")
 		}
 	}
