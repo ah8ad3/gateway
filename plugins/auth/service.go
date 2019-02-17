@@ -3,13 +3,14 @@ package auth
 import (
 	"context"
 	"fmt"
-	"github.com/ah8ad3/gateway/pkg/db"
 	"net/http"
 	"strings"
 	"time"
 
+	"github.com/ah8ad3/gateway/pkg/db"
+
 	"github.com/ah8ad3/gateway/pkg/logger"
-	"github.com/dgrijalva/jwt-go"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"golang.org/x/crypto/bcrypt"

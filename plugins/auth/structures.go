@@ -1,6 +1,6 @@
 package auth
 
-import "github.com/dgrijalva/jwt-go"
+import jwt "github.com/dgrijalva/jwt-go"
 
 // User model for auth staff
 type User struct {
