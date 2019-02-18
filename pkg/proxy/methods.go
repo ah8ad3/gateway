@@ -42,7 +42,7 @@ func LoadServices(jsonData bool, serLocation string) {
 		}
 
 		// save data to db automatically after load
-		saveServices()
+		SaveServices()
 	} else {
 		// this is how get info from db
 		_ = json.Unmarshal(db.GetProxies(), &Services)
@@ -106,7 +106,7 @@ func AddPlugin(serviceName string, pluginName string, config map[string]interfac
 			Services[id].Plugins = append(Services[id].Plugins, plugin)
 
 			// save services after change automatically
-			saveServices()
+			SaveServices()
 
 			return "ok", false
 		}
@@ -136,7 +136,9 @@ func RemovePlugin(serviceName string, pluginName string) (string, bool) {
 	return "", false
 }
 
-func saveServices() {
+// SaveServices to save services
+// you just call it and this function save all services are in proxy
+func SaveServices() {
 	JData, _ := json.Marshal(Services)
 	db.InsertProxy(JData)
 }

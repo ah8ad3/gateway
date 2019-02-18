@@ -29,6 +29,7 @@ This is an simple gateway written in Golang
 - Aggregate requests dynamically by define in integrate.json by template
 - DB manager with encryption to manage proxy and plugins
 - Middleware per proxy
+- Add and Delete proxy with REST Api
 
 # Installation
 ### Release
