@@ -38,6 +38,8 @@ func V1() *chi.Mux {
 	r.Route("/api/v10/admin", func(r chi.Router) {
 		r.Get("/service", admin.GETService)
 		r.Get("/service/{service_name}", admin.GETServiceSlug)
+		r.Post("/service/{service_name}/{version}/plugin", admin.AddPlugin)
+		r.Delete("/service/{service_name}/{version}/plugin", admin.DeletePlugin)
 		r.Post("/service", admin.PostService)
 		r.Delete("/service", admin.DeleteService)
 		r.Put("/service", admin.UpdateService)

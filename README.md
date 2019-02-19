@@ -29,7 +29,7 @@ This is an simple gateway written in Golang
 - Aggregate requests dynamically by define in integrate.json by template
 - DB manager with encryption to manage proxy and plugins
 - Middleware per proxy
-- Add and Delete proxy with REST Api
+- Now You can get, add, update, delete proxies, also you can add, update, delete plugin of proxies with rest Api 
 
 # Installation
 ### Release
@@ -38,19 +38,18 @@ for use released versions
 
 ### Manual
 ```bash
-    go get -t -v https://github.com/ah8ad3/gateway
-    cd $GOPATH/src/github.com/ah8ad3/gateway
-    make build
-    ./dist/gateway secret   #for generate secret key
-    ./dist/gateway load     # for load proxies from template json file
-    ./dist/gateway run      # to run server
+  go get -t -v https://github.com/ah8ad3/gateway
+  cd $GOPATH/src/github.com/ah8ad3/gateway
+  make build
+  ./dist/gateway secret   #for generate secret key
+  ./dist/gateway load     # for load proxies from template json file
+  ./dist/gateway run      # to run server
 ```
 
 ### Docker
 Soon...
 
 # TODO
-- REST for modifying services in progress **important
 - ApiInfo async
 - Tests
 - working on crud requests fo RouteV1

@@ -2,7 +2,11 @@ package admin
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
+
+	"github.com/ah8ad3/gateway/plugins"
 
 	"github.com/go-chi/chi"
 
@@ -19,8 +23,6 @@ func getServices() []byte {
 // Welcome just an sample welcome
 func Welcome(w http.ResponseWriter, r *http.Request) {
 	_ = r
-
-	//str, _ := proxy.AddPlugin("service1", "rateLimiter", nil)
 	_, _ = w.Write([]byte("Welcome To Gateway"))
 	return
 }
@@ -154,7 +156,7 @@ func GETServiceSlug(w http.ResponseWriter, r *http.Request) {
 	name := chi.URLParam(r, "service_name")
 	if name == "" {
 		w.WriteHeader(400)
-		w.Write([]byte(`{"error": "url paramter not found"}`))
+		w.Write([]byte(`{"error": "url paramter missed"}`))
 		return
 	}
 	var services []proxy.Service
@@ -174,4 +176,80 @@ func GETServiceSlug(w http.ResponseWriter, r *http.Request) {
 	data, _ := json.Marshal(services)
 	w.Write(data)
 	return
+}
+
+// AddPlugin to add plugins to services/proxies
+func AddPlugin(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	name := chi.URLParam(r, "service_name")
+	ver := chi.URLParam(r, "version")
+	if name == "" || ver == "" {
+		w.WriteHeader(400)
+		w.Write([]byte(`{"error": "url paramter missed"}`))
+		return
+	}
+	version, err := strconv.Atoi(ver)
+	if err != nil {
+		w.WriteHeader(400)
+		w.Write([]byte(`{"error": "version must be int"}`))
+		return
+	}
+
+	var plug plugins.Plugin
+	decoder := json.NewDecoder(r.Body)
+
+	err = decoder.Decode(&plug)
+	if err != nil {
+		w.WriteHeader(400)
+		_, _ = w.Write([]byte(`{"error": "the template of json is incorrect"}`))
+		return
+	}
+
+	str, notOK := proxy.AddPlugin(name, version, plug.Name, plug.Config)
+	if notOK {
+		w.WriteHeader(400)
+		_, _ = w.Write([]byte(fmt.Sprintf(`{"error": "%s"}`, str)))
+		return
+	}
+
+	w.Write([]byte(fmt.Sprintf(`{"status": "%s"}`, str)))
+}
+
+// DeletePlugin to delete plugin from service/proxy
+func DeletePlugin(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	name := chi.URLParam(r, "service_name")
+	ver := chi.URLParam(r, "version")
+	if name == "" || ver == "" {
+		w.WriteHeader(400)
+		w.Write([]byte(`{"error": "url paramter missed"}`))
+		return
+	}
+	version, err := strconv.Atoi(ver)
+	if err != nil {
+		w.WriteHeader(400)
+		w.Write([]byte(`{"error": "version must be int"}`))
+		return
+	}
+
+	var plug plugins.Plugin
+	decoder := json.NewDecoder(r.Body)
+
+	err = decoder.Decode(&plug)
+	if err != nil {
+		w.WriteHeader(400)
+		_, _ = w.Write([]byte(`{"error": "the template of json is incorrect"}`))
+		return
+	}
+
+	str, notOK := proxy.RemovePlugin(name, version, plug.Name)
+	if notOK {
+		w.WriteHeader(400)
+		_, _ = w.Write([]byte(fmt.Sprintf(`{"error": "%s"}`, str)))
+		return
+	}
+
+	w.Write([]byte(fmt.Sprintf(`{"status": "%s"}`, str)))
 }

@@ -48,6 +48,12 @@ func AddPluginProxy(name string, active bool, conf map[string]interface{}) (Plug
 		if val.Name == name {
 			if conf == nil {
 				conf = val.Config
+			} else {
+				for key, value := range val.Config {
+					if conf[key] == nil {
+						conf[key] = value
+					}
+				}
 			}
 			return Plugin{Name: val.Name, Active: active, Config: conf, Middleware: val.Middleware}, false
 		}

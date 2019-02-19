@@ -78,22 +78,39 @@ func CheckServices(then bool) {
 // HealthCheck function for check all services per hour in goroutine
 func HealthCheck() {
 	for {
-		time.Sleep(time.Duration(time.Hour * 1))
+		time.Sleep(time.Duration(time.Minute * 5))
 		CheckServices(true)
 	}
 }
 
+func updateConfigPlugin(pluginName string, serviceID int, pluginID int, config map[string]interface{}) {
+	// search if one of the configs not entered by user be default value
+	for _, plug := range plugins.Plugins {
+		if pluginName == plug.Name {
+			for key, value := range plug.Config {
+				if config[key] == nil {
+					config[key] = value
+				}
+			}
+			Services[serviceID].Plugins[pluginID].Config = config
+			// save services after change automatically
+			SaveServices()
+		}
+	}
+}
+
 // AddPlugin api for add plugin to proxy
-func AddPlugin(serviceName string, pluginName string, config map[string]interface{}) (string, bool) {
+// work with service name and version and plugin name
+func AddPlugin(serviceName string, version int, pluginName string, config map[string]interface{}) (string, bool) {
 	for id, val := range Services {
-		if val.Name == serviceName {
+		if val.Name == serviceName && val.Version == version {
 			for idx, plug := range val.Plugins {
 				if plug.Name == pluginName {
 					if config != nil {
-						Services[id].Plugins[idx].Config = config
-						return "ok", true
+						updateConfigPlugin(pluginName, id, idx, config)
+						return "config updated", false
 					}
-					return "plugin exist", false
+					return "plugin exist", true
 				}
 			}
 
@@ -132,8 +149,21 @@ func SyncPlugins(proxyName string) {
 }
 
 // RemovePlugin from proxy
-func RemovePlugin(serviceName string, pluginName string) (string, bool) {
-	return "", false
+func RemovePlugin(serviceName string, version int, pluginName string) (string, bool) {
+	for id, val := range Services {
+		if serviceName == val.Name && version == val.Version {
+			for idx, plug := range val.Plugins {
+				if plug.Name == pluginName {
+					Services[id].Plugins = append(val.Plugins[:idx], val.Plugins[idx+1:]...)
+
+					SaveServices()
+					return "Deleted", false
+				}
+			}
+			return "Plugin not found", true
+		}
+	}
+	return "Proxy not found", true
 }
 
 // SaveServices to save services
