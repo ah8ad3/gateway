@@ -35,10 +35,12 @@ func V1() *chi.Mux {
 
 	r.Get("/", admin.Welcome)
 
-	r.Route("/admin", func(r chi.Router) {
+	r.Route("/api/v10/admin", func(r chi.Router) {
 		r.Get("/service", admin.GETService)
+		r.Get("/service/{service_name}", admin.GETServiceSlug)
 		r.Post("/service", admin.PostService)
 		r.Delete("/service", admin.DeleteService)
+		r.Put("/service", admin.UpdateService)
 	})
 
 	r.Route("/auth", func(r chi.Router) {
