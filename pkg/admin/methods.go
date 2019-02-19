@@ -2,8 +2,9 @@ package admin
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
+
+	"github.com/go-chi/chi"
 
 	"github.com/ah8ad3/gateway/pkg/proxy"
 )
@@ -21,12 +22,14 @@ func Welcome(w http.ResponseWriter, r *http.Request) {
 
 	//str, _ := proxy.AddPlugin("service1", "rateLimiter", nil)
 	_, _ = w.Write([]byte("Welcome To Gateway"))
+	return
 }
 
 // GETService get all services in admin mode
 func GETService(w http.ResponseWriter, r *http.Request) {
 	_ = r
 	_, _ = w.Write(getServices())
+	return
 }
 
 // PostService to add some proxy
@@ -66,6 +69,7 @@ func PostService(w http.ResponseWriter, r *http.Request) {
 	jData, _ := json.Marshal(serveice)
 	w.WriteHeader(201)
 	w.Write(jData)
+	return
 }
 
 // DeleteService to delete proxy of list
@@ -147,12 +151,27 @@ func UpdateService(w http.ResponseWriter, r *http.Request) {
 func GETServiceSlug(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	context := r.Context()
-	name := context.Value("service_name")
+	name := chi.URLParam(r, "service_name")
 	if name == "" {
 		w.WriteHeader(400)
 		w.Write([]byte(`{"error": "url paramter not found"}`))
+		return
 	}
-	fmt.Println(r.URL.Scheme)
-	w.Write([]byte(`{"name": ""}`))
+	var services []proxy.Service
+
+	for _, val := range proxy.Services {
+		if val.Name == name {
+			services = append(services, val)
+		}
+	}
+
+	if len(services) == 0 {
+		w.WriteHeader(404)
+		w.Write([]byte(`{"error": "no any service found"}`))
+		return
+	}
+
+	data, _ := json.Marshal(services)
+	w.Write(data)
+	return
 }
