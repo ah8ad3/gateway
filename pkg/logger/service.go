@@ -18,7 +18,8 @@ var Connect bool
 
 // OpenConnection function for open connection with mongodb once
 func OpenConnection() {
-	client, err := mongo.NewClient("mongodb://localhost:27017")
+	client, err := mongo.NewClientWithOptions("mongodb://localhost:27017")
+	// client, err := mongo.NewClient()
 	if err != nil {
 		fmt.Println(err.Error())
 		Connect = false
