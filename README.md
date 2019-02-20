@@ -50,12 +50,14 @@ for use released versions
 Soon...
 
 # TODO
+- Schedule for requests life cycle inside of gateway
+- Support envoy, kubernetes
 - ApiInfo async
 - Tests
 - working on crud requests fo RouteV1
 - RoutesV2 to prefix route and act like bridge, rewrite route url
 - some plugins: intelligent load balancer, ssl support, simple monitoring,
-cache for gateway, nginx communication, kubernetes communication
+cache for gateway
 
 # Constants
 - services work with HTTP/1.1
