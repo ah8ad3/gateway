@@ -8,4 +8,4 @@ RUN go get -t ./...
 
 EXPOSE 3000
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
