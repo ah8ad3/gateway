@@ -47,7 +47,10 @@ for use released versions
 ```
 
 ### Docker
-Soon...
+```bash
+  docker build -t ah8ad3/gateway .
+  docker run -d -p 3000:3000 ah8ad3/gateway
+```
 
 # TODO
 - Schedule for requests life cycle inside of gateway
