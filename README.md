@@ -48,7 +48,11 @@ for use released versions
 
 ### Docker
 ```bash
+1.
   docker build -t ah8ad3/gateway .
+  docker run -d -p 3000:3000 ah8ad3/gateway
+2.
+  docker pull ah8ad3/gateway:latest
   docker run -d -p 3000:3000 ah8ad3/gateway
 ```
 
