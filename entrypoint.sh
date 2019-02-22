@@ -1,3 +1,5 @@
+#!/bin/bash
+
 sh build/build.sh
 
 ./dist/gateway secret
