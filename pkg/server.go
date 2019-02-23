@@ -64,7 +64,7 @@ func RUN(ip string, port string) {
 		port = "3000"
 	}
 	if ip == "" {
-		ip = "localhost"
+		ip = "0.0.0.0"
 	}
 
 	listen := ip + ":" + port

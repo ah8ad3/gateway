@@ -10,12 +10,13 @@ RUN go get -t .
 RUN sh build/build.sh
 
 FROM alpine
-# RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
-RUN apk add --no-cache bash
+RUN apk update && apk add ca-certificates bash && rm -rf /var/cache/apk/*
 
 WORKDIR /app
-COPY --from=build_env $GOPATH/src/github.com/ah8ad3/gateway/dist/gateway /app
-COPY --from=build_env $GOPATH/src/github.com/ah8ad3/gateway/entrypoint.sh /app
+COPY --from=build_env /go/src/github.com/ah8ad3/gateway/dist/gateway .
+COPY --from=build_env /go/src/github.com/ah8ad3/gateway/entrypoint.sh .
+COPY --from=build_env /go/src/github.com/ah8ad3/gateway/services.json .
+COPY --from=build_env /go/src/github.com/ah8ad3/gateway/integrates.json .
 
 EXPOSE 3000
 
