@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/mongodb/mongo-go-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/mongodb/mongo-go-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // Collection here that we manage Logs db

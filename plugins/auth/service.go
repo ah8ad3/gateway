@@ -11,8 +11,8 @@ import (
 
 	"github.com/ah8ad3/gateway/pkg/logger"
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/mongodb/mongo-go-driver/bson"
-	"github.com/mongodb/mongo-go-driver/mongo"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
 
