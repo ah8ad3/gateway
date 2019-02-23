@@ -1,12 +1,10 @@
 package pkg
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"os/signal"
 
 	"github.com/ah8ad3/gateway/pkg/db"
 	"github.com/ah8ad3/gateway/pkg/integrate"
@@ -53,10 +51,6 @@ func RUN(ip string, port string) {
 		log.Fatal("Secret Key not Found, generate it by\n  \t gateway secret")
 	}
 
-	stop := make(chan os.Signal, 1)
-
-	signal.Notify(stop, os.Interrupt)
-
 	settings()
 	r := routes.V1()
 
@@ -71,17 +65,13 @@ func RUN(ip string, port string) {
 
 	hs := setup(listen, r)
 
-	go func() {
-		fmt.Println(fmt.Sprintf("Listening on http://%s\n", hs.Addr))
+	fmt.Println(fmt.Sprintf("Listening on http://%s\n", hs.Addr))
 
-		if err := hs.ListenAndServe(); err != http.ErrServerClosed {
-			log.Fatal(err.Error())
-		}
-	}()
+	err := hs.ListenAndServe()
+	if err != http.ErrServerClosed {
+		log.Fatal(err.Error())
+	}
 
-	<-stop
-
-	_ = hs.Shutdown(context.Background())
 }
 
 func setup(url string, r *chi.Mux) *http.Server {

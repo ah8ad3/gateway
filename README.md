@@ -30,7 +30,7 @@ This is an simple gateway written in Golang
 - DB manager with encryption to manage proxy and plugins
 - Middleware per proxy
 - Now You can get, add, update, delete proxies, also you can add, update, delete plugin of proxies with rest Api 
-- K8s added but not tested yet
+- K8s support, need to figure out strategy
 
 # Installation
 ### Release
