@@ -53,6 +53,7 @@ func RUN(ip string, port string) {
 
 	settings()
 	r := routes.V1()
+	fmt.Println("Routes V1 created")
 
 	if port == "" {
 		port = "3000"

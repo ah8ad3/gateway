@@ -31,7 +31,7 @@ func V1() *chi.Mux {
 	//r.Use(ratelimitter.TestMiddle(10))
 
 	// Ip block Middleware
-	r.Use(ip.Middleware(nil))
+	// r.Use(ip.Middleware(nil))
 
 	r.Get("/", admin.Welcome)
 
