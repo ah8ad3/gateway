@@ -20,4 +20,8 @@ COPY --from=build_env /go/src/github.com/ah8ad3/gateway/integrates.json .
 
 EXPOSE 3000
 
-ENTRYPOINT ["./entrypoint.sh"]
+RUN ./gateway secret
+RUN ./gateway load
+
+CMD ["./gateway", "run"]
+#ENTRYPOINT ["entrypoint.sh"]
