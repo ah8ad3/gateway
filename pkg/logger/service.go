@@ -2,9 +2,10 @@ package logger
 
 import (
 	"context"
-	"fmt"
+	"time"
 
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -20,18 +21,21 @@ var Connect bool
 
 // OpenConnection function for open connection with mongodb once
 func OpenConnection() {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	client, _ := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+
+	err := client.Connect(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	err = client.Ping(ctx, readpref.Primary())
 	if err != nil {
-		fmt.Println(err.Error())
 		Connect = false
+		cancel()
 	} else {
 		Connect = true
-		err = client.Connect(context.Background())
 
 		DB = client.Database("gateway")
-
 		Collection = DB.Collection("log")
 	}
+	_ = cancel
 }
 
 // SetUserLog set the middleware logs here

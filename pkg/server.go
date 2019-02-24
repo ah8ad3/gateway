@@ -35,7 +35,7 @@ func settings() {
 	plugins.RegisterPlugins()
 
 	proxy.LoadServices(false, serLocation)
-	go proxy.CheckServices(false)
+	proxy.CheckServices(false)
 
 	integrate.LoadIntegration()
 
@@ -53,7 +53,6 @@ func RUN(ip string, port string) {
 
 	settings()
 	r := routes.V1()
-	fmt.Println("Routes V1 created")
 
 	if port == "" {
 		port = "3000"
