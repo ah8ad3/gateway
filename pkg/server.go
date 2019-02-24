@@ -35,7 +35,7 @@ func settings() {
 	plugins.RegisterPlugins()
 
 	proxy.LoadServices(false, serLocation)
-	proxy.CheckServices(false)
+	go proxy.CheckServices(false)
 
 	integrate.LoadIntegration()
 
