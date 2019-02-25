@@ -182,3 +182,13 @@ func V1() *chi.Mux {
 	}
 	return r
 }
+
+// V2 is prefix type route
+func V2() *chi.Mux {
+	r := chi.NewRouter()
+	proxy := NewProxy("http://localhost:5000/", "/test")
+
+	r.HandleFunc("/test/*", proxy.handleProxy)
+
+	return r
+}

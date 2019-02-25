@@ -52,7 +52,8 @@ func RUN(ip string, port string) {
 	}
 
 	settings()
-	r := routes.V1()
+	// r := routes.V1()
+	r := routes.V2()
 
 	if port == "" {
 		port = "3000"
