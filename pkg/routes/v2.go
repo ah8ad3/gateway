@@ -15,20 +15,19 @@ import (
 
 // Proxy to create path prefix routes
 type Proxy struct {
-	proxy   *httputil.ReverseProxy
-	service *proxy.Service
+	proxy   httputil.ReverseProxy
+	service proxy.Service
 }
 
 // NewProxy to create Proxy instance easier
-func NewProxy(service *proxy.Service) *Proxy {
-	return &Proxy{service: service, proxy: singleHodtRewriteReverse(service)}
+func NewProxy(service proxy.Service) Proxy {
+	return Proxy{service: service, proxy: singleHodtRewriteReverse(service)}
 }
 
-func (p *Proxy) handleProxy(w http.ResponseWriter, r *http.Request) {
+func (p Proxy) handleProxy(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-GoProxy", "GoProxy")
 	// p.proxy.Transport = &myTransport{}
 	// also here can define all middleware stuff
-	fmt.Println(p.service.Name)
 	p.proxy.ServeHTTP(w, r)
 }
 
@@ -53,7 +52,7 @@ func findHost(path string) string {
 	return ""
 }
 
-func getHost(proxy *proxy.Service) *url.URL {
+func getHost(proxy proxy.Service) *url.URL {
 	rand.Seed(time.Now().Unix())
 	if proxy.UPHostsCoutn == 0 {
 		host, _ := url.Parse(proxy.Server[rand.Intn(len(proxy.Server))].Server)
@@ -64,7 +63,7 @@ func getHost(proxy *proxy.Service) *url.URL {
 
 }
 
-func singleHodtRewriteReverse(proxy *proxy.Service) *httputil.ReverseProxy {
+func singleHodtRewriteReverse(proxy proxy.Service) httputil.ReverseProxy {
 
 	director := func(req *http.Request) {
 		target := getHost(proxy)
@@ -89,7 +88,7 @@ func singleHodtRewriteReverse(proxy *proxy.Service) *httputil.ReverseProxy {
 			req.Header.Set("User-Agent", "")
 		}
 	}
-	return &httputil.ReverseProxy{Director: director}
+	return httputil.ReverseProxy{Director: director}
 }
 
 func singleJoiningSlash(a, b string) string {

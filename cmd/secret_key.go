@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// NewLoadCmd creates a new version command
+// NewSecretKeyCmd creates a new version command
 func NewSecretKeyCmd(ctx context.Context) *cobra.Command {
 	return &cobra.Command{
 		Use:     "secret",

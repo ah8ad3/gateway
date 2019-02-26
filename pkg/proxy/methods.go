@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net"
+	"net/http"
 	"os"
 	"time"
 
@@ -61,7 +61,13 @@ func CheckServices(then bool) {
 		upHostsCount := 0
 		var upHosts []string
 		for serverID, server := range val.Server {
-			if _, err := net.Dial("tcp", server.Server); err != nil {
+
+			timeout := time.Duration(3 * time.Second)
+			client := http.Client{
+				Timeout: timeout,
+			}
+			_, err := client.Get(server.Server + "/healthz")
+			if err != nil {
 				Services[serviceID].Server[serverID].Up = false
 				if then == false {
 					fmt.Printf(ErrorColor, fmt.Sprintf("Service %s not Up in server %s \n", val.Name, server.Server))

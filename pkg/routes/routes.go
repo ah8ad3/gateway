@@ -188,10 +188,8 @@ func V2() *chi.Mux {
 	r := chi.NewRouter()
 
 	for _, val := range proxy.Services {
-		proxy := NewProxy(&val)
-		r.HandleFunc(val.Path+"/*", proxy.handleProxy)
-
+		proxy := NewProxy(val)
+		r.HandleFunc(proxy.service.Path+"/*", proxy.handleProxy)
 	}
-
 	return r
 }

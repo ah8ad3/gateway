@@ -14,7 +14,8 @@ func NewServerCmd(ctx context.Context) *cobra.Command {
 		Short:   "Run gateway server",
 		Aliases: []string{"r"},
 		Run: func(cmd *cobra.Command, args []string) {
-			pkg.RUN("", "")
+			ip, port, route := "0.0.0.0", "3000", "v2"
+			pkg.RUN(ip, port, route)
 		},
 	}
 }

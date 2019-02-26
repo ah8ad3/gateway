@@ -31,6 +31,7 @@ This is an simple gateway written in Golang
 - Middleware per proxy
 - Now You can get, add, update, delete proxies, also you can add, update, delete plugin of proxies with rest Api 
 - K8s support, need to figure out strategy
+- RouteV2 is here, path prefix to support all https, https, tcp
 
 # Installation
 ### Release
@@ -63,13 +64,15 @@ for use released versions
 - ApiInfo async
 - Tests
 - working on crud requests fo RouteV1
-- RoutesV2 to prefix route and act like bridge, rewrite route url
 - some plugins: intelligent load balancer, ssl support, simple monitoring,
 cache for gateway
 
 # Constants
 - services work with HTTP/1.1
 - RoutesV1
+
+- RouteV2
+- fix all constants in RouteV1
 
 ----
 # Routing
@@ -82,10 +85,13 @@ it just get `x-www-urlencoded` form and send it to service like json
 
 testing to fix all bugs
 
------
-I dont implement api gateway with all standard features because i dont need them now.
-i will implement a simple api gateway for my private project, after that i will implement more good features
+`RoutesV2`
+this is second version of routing in this gateway, it's like rewirite reverce proxy to connect requests to 
+services, also this Routation fix all RouteV1 constants
 
+-----
+
+> This api gateway create to make developers easier to work with services, not end
 
 # Contributing
 Just pick one of the Todo works and do it, or write some plugin for it,

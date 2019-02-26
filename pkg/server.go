@@ -44,16 +44,19 @@ func settings() {
 }
 
 // RUN for run server
-func RUN(ip string, port string) {
+func RUN(ip string, port string, route string) {
 	str, _ := db.LoadSecretKey()
 	db.SecretKey = str
 	if db.SecretKey == "" {
 		log.Fatal("Secret Key not Found, generate it by\n  \t gateway secret")
 	}
-
+	var r *chi.Mux
 	settings()
-	// r := routes.V1()
-	r := routes.V2()
+	if route == "v1" {
+		r = routes.V1()
+	} else {
+		r = routes.V2()
+	}
 
 	if port == "" {
 		port = "3000"
