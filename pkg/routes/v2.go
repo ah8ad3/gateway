@@ -2,44 +2,81 @@ package routes
 
 import (
 	"fmt"
+	"math/rand"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"strings"
+	"time"
+
+	"github.com/ah8ad3/gateway/pkg/logger"
+	"github.com/ah8ad3/gateway/pkg/proxy"
 )
 
 // Proxy to create path prefix routes
 type Proxy struct {
-	target *url.URL
-	proxy  *httputil.ReverseProxy
-	prefix string
+	proxy   *httputil.ReverseProxy
+	service *proxy.Service
 }
 
 // NewProxy to create Proxy instance easier
-func NewProxy(target string, prefix string) *Proxy {
-	url, _ := url.Parse(target)
-	fmt.Println(url)
-
-	return &Proxy{target: url, proxy: singleHodtRewriteReverse(url, prefix)}
+func NewProxy(service *proxy.Service) *Proxy {
+	return &Proxy{service: service, proxy: singleHodtRewriteReverse(service)}
 }
 
 func (p *Proxy) handleProxy(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-GoProxy", "GoProxy")
 	// p.proxy.Transport = &myTransport{}
 	// also here can define all middleware stuff
+	fmt.Println(p.service.Name)
 	p.proxy.ServeHTTP(w, r)
 }
 
-func singleHodtRewriteReverse(target *url.URL, prefix string) *httputil.ReverseProxy {
-	targetQuery := target.RawQuery
+func findHost(path string) string {
+	rand.Seed(time.Now().Unix())
+	path = "/" + path
+	for _, val := range proxy.Services {
+		if val.Path == path {
+			for range val.Server {
+				ser := val.Server[rand.Intn(len(val.Server))]
+				if ser.Up {
+					return ser.Server
+				}
+			}
+			return val.Server[rand.Intn(len(val.Server))].Server
+		}
+	}
+	logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "critical",
+		Description: fmt.Sprintf("bad path check services %s", path)},
+		Pkg: "auth", Time: time.Now()})
+	//log.Fatal("bad path check services ", path)
+	return ""
+}
+
+func getHost(proxy *proxy.Service) *url.URL {
+	rand.Seed(time.Now().Unix())
+	if proxy.UPHostsCoutn == 0 {
+		host, _ := url.Parse(proxy.Server[rand.Intn(len(proxy.Server))].Server)
+		return host
+	}
+	host, _ := url.Parse(proxy.UPHosts[rand.Intn(len(proxy.UPHosts))])
+	return host
+
+}
+
+func singleHodtRewriteReverse(proxy *proxy.Service) *httputil.ReverseProxy {
+
 	director := func(req *http.Request) {
+		target := getHost(proxy)
+		targetQuery := target.RawQuery
+
 		req.URL.Scheme = target.Scheme
 		req.URL.Host = target.Host
-		if prefix == "/" {
+		if proxy.Path == "/" {
 			req.URL.Path = singleJoiningSlash(target.Path, req.URL.Path)
 		} else {
 
-			url := strings.Replace(req.URL.Path, prefix, "", 1)
+			url := strings.Replace(req.URL.Path, proxy.Path, "", 1)
 			req.URL.Path = singleJoiningSlash(target.Path, url)
 		}
 		if targetQuery == "" || req.URL.RawQuery == "" {

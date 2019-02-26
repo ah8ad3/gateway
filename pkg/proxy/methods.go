@@ -58,6 +58,8 @@ func LoadServices(jsonData bool, serLocation string) {
 // params: then : mean that function call at start or later in health
 func CheckServices(then bool) {
 	for serviceID, val := range Services {
+		upHostsCount := 0
+		var upHosts []string
 		for serverID, server := range val.Server {
 			if _, err := net.Dial("tcp", server.Server); err != nil {
 				Services[serviceID].Server[serverID].Up = false
@@ -68,17 +70,20 @@ func CheckServices(then bool) {
 					Pkg: "routes", Time: time.Now()})
 				//log.Fatal(err)  // for production mode
 			} else {
-				fmt.Println("server ", server.Server, " is up")
+				upHostsCount++
+				upHosts = append(upHosts, server.Server)
 				Services[serviceID].Server[serverID].Up = true
 			}
 		}
+		Services[serviceID].UPHostsCoutn = upHostsCount
+		Services[serviceID].UPHosts = upHosts
 	}
 }
 
 // HealthCheck function for check all services per hour in goroutine
 func HealthCheck() {
 	for {
-		time.Sleep(time.Duration(time.Minute * 5))
+		time.Sleep(time.Duration(time.Minute * 1))
 		CheckServices(true)
 	}
 }
