@@ -24,4 +24,3 @@ RUN ./gateway secret
 RUN ./gateway load
 
 CMD ["./gateway", "run"]
-#ENTRYPOINT ["entrypoint.sh"]
