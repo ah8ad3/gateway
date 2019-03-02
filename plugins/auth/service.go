@@ -114,6 +114,7 @@ func SignJWT(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// must replace
 	pointer := collection.FindOne(context.Background(), bson.D{{"username", username}})
 	raw, err := pointer.DecodeBytes()
 	if err != nil {
@@ -180,6 +181,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// must replace
 	pointer := collection.FindOne(context.Background(), bson.D{{"username", username}})
 	_, err := pointer.DecodeBytes()
 
