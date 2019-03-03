@@ -26,3 +26,6 @@ gin-bin
 _book
 vendor
 nod
+
+# for goland idea stuff
+.idea
