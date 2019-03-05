@@ -7,11 +7,6 @@ script:
   - go get -v -t github.com/ah8ad3/gateway
   - sh build/build.sh
 
-branches:
-  only:
-  - master
-  - /v\d+\.\d+[a-z]/
-
 before_deploy:
 - export TRAVIS_TAG="0.3.$TRAVIS_BUILD_NUMBER"
 - echo "$TRAVIS_TAG" "$TRAVIS_COMMIT"
