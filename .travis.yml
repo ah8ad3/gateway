@@ -7,6 +7,11 @@ script:
   - go get -v -t github.com/ah8ad3/gateway
   - sh build/build.sh
 
+branches:
+  only:
+  - master
+  - /v\d+\.\d+[a-z]/
+
 deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
