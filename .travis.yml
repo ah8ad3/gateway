@@ -12,6 +12,14 @@ branches:
   - master
   - /v\d+\.\d+[a-z]/
 
+before_deploy:
+- export TRAVIS_TAG="0.3.$TRAVIS_BUILD_NUMBER"
+- echo "$TRAVIS_TAG" "$TRAVIS_COMMIT"
+- git config --local user.name "$USER_NAME"
+- git config --local user.email "$USER_EMAIL"
+- git tag "$TRAVIS_TAG" "$TRAVIS_COMMIT"
+
+
 deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
