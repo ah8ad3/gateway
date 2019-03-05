@@ -1,2 +1,16 @@
 language: go
-script: go get -v -t github.com/ah8ad3/gateway
+
+go:
+  - "1.10"
+
+script:
+  - go get -v -t github.com/ah8ad3/gateway
+  - sh build/build.sh
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  file: "dist/gateway"
+  skip_cleanup: true
+  on:
+    tags: true
