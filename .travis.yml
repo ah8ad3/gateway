@@ -26,4 +26,5 @@ deploy:
   file: "dist/gateway"
   skip_cleanup: true
   on:
-    tags: true
+    tags: false
+    branch: release
