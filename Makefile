@@ -57,3 +57,10 @@ clean:
 number:
 	@echo "$(OK_COLOR)==> checking code numbers$(NO_COLOR)"
 	@find . -name "*.go" | xargs wc -l
+
+coverage_show:
+	@echo "$(OK_COLOR)==> Getting test coverage $(NO_COLOR)"
+	@go test ./... -coverprofile=coverage.out -cover
+
+coverage: coverage_show
+	@go tool cover -html=coverage.out

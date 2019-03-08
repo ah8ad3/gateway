@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/ah8ad3/gateway/pkg/db"
@@ -27,18 +25,18 @@ const (
 var Services []Service
 
 // LoadServices function for loading services from json file
-func LoadServices(jsonData bool, serLocation string) {
+func LoadServices(jsonData bool, serLocation string) error {
 	if jsonData {
 		data, err := ioutil.ReadFile(serLocation)
 
 		if err != nil {
-			log.Fatal(err)
-			os.Exit(1)
+			return err
 		}
 		err = json.Unmarshal(data, &Services)
 		if err != nil {
-			fmt.Println("services.json cant match to Structure read the docs or act like template")
-			os.Exit(1)
+			//fmt.Println("services.json cant match to Structure read the docs or act like template")
+			//os.Exit(1)
+			return err
 		}
 
 		// save data to db automatically after load
@@ -52,6 +50,8 @@ func LoadServices(jsonData bool, serLocation string) {
 		SyncPlugins(val.Name)
 		fmt.Printf(WarningColor, fmt.Sprintf("Service %s Loaded \n", val.Name))
 	}
+
+	return nil
 }
 
 // CheckServices function for check if service is available or not

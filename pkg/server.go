@@ -26,7 +26,7 @@ func init() {
 	}
 }
 
-func settings() {
+func settings() error{
 	logger.OpenConnection()
 	// Require for auth Database staff
 	auth.OpenAuthCollection()
@@ -34,13 +34,17 @@ func settings() {
 	// register all plugins to gateway
 	plugins.RegisterPlugins()
 
-	proxy.LoadServices(false, serLocation)
+	err := proxy.LoadServices(false, serLocation)
+	if err != nil {
+		return err
+	}
 	proxy.CheckServices(false)
 
 	integrate.LoadIntegration()
 
 	// check all service available every one hour
 	go proxy.HealthCheck()
+	return nil
 }
 
 // RUN for run server
@@ -57,6 +61,17 @@ func RUN(ip string, port string, route string) {
 	} else {
 		r = routes.V2()
 	}
+
+	//walkFunc := func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
+	//	fmt.Printf("%s %s\n", method, route)
+	//	println(route)
+	//	return nil
+	//}
+	//
+	//if err := chi.Walk(r, walkFunc); err != nil {
+	//	fmt.Printf("Logging err: %s\n", err.Error())
+	//}
+
 
 	if port == "" {
 		port = "3000"
