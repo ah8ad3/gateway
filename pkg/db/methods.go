@@ -13,6 +13,7 @@ import (
 	"os"
 	"time"
 
+	exception "github.com/ah8ad3/gateway/pkg/err"
 	"github.com/ah8ad3/gateway/pkg/logger"
 )
 
@@ -37,9 +38,12 @@ func init() {
 }
 
 // InsertProxy func for insert all proxy that been Marshal and encrypt and save it to db/proxy.bin file
-func InsertProxy(proxies []byte) {
+func InsertProxy(proxies []byte) exception.Err {
 	if _, err := ioutil.ReadFile(proxyDir); err != nil {
-		proxies = encryptData(proxies)
+		proxies, _err := encryptData(proxies)
+		if _err.Message != "" {
+			return _err
+		}
 		err := ioutil.WriteFile(proxyDir, proxies, 0644)
 		if err != nil {
 			logger.SetSysLog(logger.SystemLog{Pkg: "db", Time: time.Now(), Log: logger.Log{Event: "critical",
@@ -47,22 +51,26 @@ func InsertProxy(proxies []byte) {
 		}
 	} else {
 		if err = os.Remove(proxyDir); err != nil {
-			logger.SetSysLog(logger.SystemLog{Pkg: "db", Time: time.Now(), Log: logger.Log{Event: "critical",
-				Description: err.Error()}})
-			log.Fatal("Cant remove proxy file")
+			//logger.SetSysLog(logger.SystemLog{Pkg: "db", Time: time.Now(), Log: logger.Log{Event: "critical",
+			//	Description: err.Error()}})
+			return exception.Err{Message: "Cant remove proxy file", Critical: true}.Log("system")
 		}
 		logger.SetSysLog(logger.SystemLog{Pkg: "db", Time: time.Now(), Log: logger.Log{Event: "log",
 			Description: "File proxies.bin removed"}})
 		InsertProxy(proxies)
 	}
+	return exception.Err{}
 }
 
 // InsertPlugins func for insert all plugins that been Marshal and encrypt and save it to db/plugin.bin file
-func InsertPlugins(plugins []byte) {
+func InsertPlugins(plugins []byte) exception.Err {
 	if _, err := ioutil.ReadFile(pluginDir); err != nil {
-		plugins = encryptData(plugins)
-		err := ioutil.WriteFile(pluginDir, plugins, 0644)
-		if err != nil {
+		plugins, err:= encryptData(plugins)
+		if err.Message != "" {
+			return err
+		}
+
+		if err := ioutil.WriteFile(pluginDir, plugins, 0644); err != nil {
 			logger.SetSysLog(logger.SystemLog{Pkg: "db", Time: time.Now(), Log: logger.Log{Event: "critical",
 				Description: err.Error()}})
 		}
@@ -70,12 +78,13 @@ func InsertPlugins(plugins []byte) {
 		if err = os.Remove(pluginDir); err != nil {
 			logger.SetSysLog(logger.SystemLog{Pkg: "db", Time: time.Now(), Log: logger.Log{Event: "critical",
 				Description: err.Error()}})
-			log.Fatal("Cant remove plugin file")
+			return exception.Err{Message: "Cant remove plugin file", Critical: true}.Log("system")
 		}
 		logger.SetSysLog(logger.SystemLog{Pkg: "db", Time: time.Now(), Log: logger.Log{Event: "log",
 			Description: "File plugin.bin removed"}})
 		InsertPlugins(plugins)
 	}
+	return exception.Err{}
 }
 
 // GetProxies to decrypt and get all saved proxy as bson
@@ -116,6 +125,7 @@ func encrypt(data []byte, passphrase string) []byte {
 	if err != nil {
 		logger.SetSysLog(logger.SystemLog{Log: logger.Log{Description: err.Error(), Event: "critical"},
 			Time: time.Now(), Pkg: "db"})
+
 		log.Fatal("Error in Data Encryption")
 	}
 	nonce := make([]byte, gcm.NonceSize())
@@ -153,13 +163,14 @@ func decrypt(data []byte, passphrase string) []byte {
 	return plaintext
 }
 
-func encryptData(data []byte) []byte {
+func encryptData(data []byte) ([]byte, exception.Err){
 	pass := SecretKey
 	if pass == "" {
-		log.Fatal("Secret Key can not be empty, for security issue")
+		return nil, exception.Err{Message: "Secret Key can not be empty, for security issue", Critical: true}
+		//log.Fatal("Secret Key can not be empty, for security issue")
 	}
 
-	return encrypt(data, pass)
+	return encrypt(data, pass), exception.Err{}
 }
 
 func decryptData(data []byte) []byte {

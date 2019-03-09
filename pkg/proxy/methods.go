@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/ah8ad3/gateway/pkg/db"
+	exception "github.com/ah8ad3/gateway/pkg/err"
 	"github.com/ah8ad3/gateway/plugins"
 
 	"github.com/ah8ad3/gateway/pkg/logger"
@@ -25,22 +26,24 @@ const (
 var Services []Service
 
 // LoadServices function for loading services from json file
-func LoadServices(jsonData bool, serLocation string) error {
+func LoadServices(jsonData bool, serLocation string) exception.Err {
 	if jsonData {
 		data, err := ioutil.ReadFile(serLocation)
 
 		if err != nil {
-			return err
+			return exception.Err{Message: err.Error(), Critical: true}.Log("system")
 		}
 		err = json.Unmarshal(data, &Services)
 		if err != nil {
 			//fmt.Println("services.json cant match to Structure read the docs or act like template")
 			//os.Exit(1)
-			return err
+			return exception.Err{Message: err.Error(), Critical: true}.Log("system")
 		}
 
 		// save data to db automatically after load
-		SaveServices()
+		if err := SaveServices(); err.Message != "" {
+			return err
+		}
 	} else {
 		// this is how get info from db
 		_ = json.Unmarshal(db.GetProxies(), &Services)
@@ -51,7 +54,7 @@ func LoadServices(jsonData bool, serLocation string) error {
 		fmt.Printf(WarningColor, fmt.Sprintf("Service %s Loaded \n", val.Name))
 	}
 
-	return nil
+	return exception.Err{}
 }
 
 // CheckServices function for check if service is available or not
@@ -179,7 +182,11 @@ func RemovePlugin(serviceName string, version int, pluginName string) (string, b
 
 // SaveServices to save services
 // you just call it and this function save all services are in proxy
-func SaveServices() {
+func SaveServices() exception.Err {
 	JData, _ := json.Marshal(Services)
-	db.InsertProxy(JData)
+	err := db.InsertProxy(JData)
+	if err.Message != "" {
+		return err
+	}
+	return exception.Err{}
 }

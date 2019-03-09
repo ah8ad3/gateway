@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/ah8ad3/gateway/pkg/db"
+	exception "github.com/ah8ad3/gateway/pkg/err"
 	"github.com/ah8ad3/gateway/pkg/integrate"
 	"github.com/ah8ad3/gateway/pkg/logger"
 	"github.com/ah8ad3/gateway/pkg/proxy"
@@ -26,7 +27,7 @@ func init() {
 	}
 }
 
-func settings() error{
+func settings() exception.Err{
 	logger.OpenConnection()
 	// Require for auth Database staff
 	auth.OpenAuthCollection()
@@ -35,7 +36,7 @@ func settings() error{
 	plugins.RegisterPlugins()
 
 	err := proxy.LoadServices(false, serLocation)
-	if err != nil {
+	if err.Message != "" {
 		return err
 	}
 	proxy.CheckServices(false)
@@ -44,7 +45,7 @@ func settings() error{
 
 	// check all service available every one hour
 	go proxy.HealthCheck()
-	return nil
+	return exception.Err{}
 }
 
 // RUN for run server

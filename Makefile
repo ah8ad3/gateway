@@ -62,5 +62,5 @@ coverage_show:
 	@echo "$(OK_COLOR)==> Getting test coverage $(NO_COLOR)"
 	@go test ./... -coverprofile=coverage.out -cover
 
-coverage: coverage_show
+cov: coverage_show
 	@go tool cover -html=coverage.out
