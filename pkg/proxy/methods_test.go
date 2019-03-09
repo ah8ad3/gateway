@@ -16,3 +16,8 @@ func TestLoadServices(t *testing.T) {
 		t.Errorf("Services cant load")
 	}
 }
+
+func TestCheckServices(t *testing.T) {
+	CheckServices(false)
+	CheckServices(true)
+}

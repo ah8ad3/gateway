@@ -7,5 +7,9 @@ import (
 
 func TestNewServerCmd(t *testing.T) {
 	// i will test this in server file later
-	NewServerCmd(context.Background())
+	err := NewServerCmd(context.Background()).Execute()
+
+	if err != nil {
+		t.Error("Server error in test")
+	}
 }
