@@ -187,9 +187,24 @@ func V1() *chi.Mux {
 func V2() *chi.Mux {
 	r := chi.NewRouter()
 
+	r.Route("/api/v10/admin", func(r chi.Router) {
+		r.Get("/service", admin.GETService)
+		r.Get("/service/{service_name}", admin.GETServiceSlug)
+		r.Post("/service/{service_name}/{version}/plugin", admin.AddPlugin)
+		r.Delete("/service/{service_name}/{version}/plugin", admin.DeletePlugin)
+		r.Post("/service", admin.PostService)
+		r.Delete("/service", admin.DeleteService)
+		r.Put("/service", admin.UpdateService)
+	})
+
 	for _, val := range proxy.Services {
 		_proxy := NewProxy(val)
-		r.HandleFunc(_proxy.service.Path+"/*", _proxy.handleProxy)
+		r.Route(_proxy.service.Path, func(r chi.Router) {
+			for _, plug := range val.Plugins{
+				r.Use(plug.Middleware(plug.Config))
+			}
+			r.HandleFunc("/*", _proxy.handleProxy)
+		})
 	}
 	return r
 }
