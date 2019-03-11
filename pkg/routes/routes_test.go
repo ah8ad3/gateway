@@ -6,10 +6,12 @@ import (
 	"testing"
 )
 
-func TestV1(t *testing.T) {
+func TestBefore(t *testing.T) {
 	db.GenerateSecretKey()
 	proxy.LoadServices(true, "./../../services.json")
+}
 
+func TestV1(t *testing.T) {
 	routes := V1()
 
 	if routes == nil {
