@@ -24,7 +24,7 @@ type Service struct {
 	Urls        []URL
 	Plugins     []plugins.Plugin
 
-	// This two attributes fielled in runtime
-	UPHostsCoutn int
+	// This two attributes filled in runtime
+	UPHostsCount int
 	UPHosts      []string
 }

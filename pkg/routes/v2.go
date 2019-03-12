@@ -54,7 +54,7 @@ func findHost(path string) string {
 
 func getHost(proxy proxy.Service) *url.URL {
 	rand.Seed(time.Now().Unix())
-	if proxy.UPHostsCoutn == 0 {
+	if proxy.UPHostsCount == 0 {
 		host, _ := url.Parse(proxy.Server[rand.Intn(len(proxy.Server))].Server)
 		return host
 	}

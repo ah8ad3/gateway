@@ -197,6 +197,12 @@ func V2() *chi.Mux {
 		r.Put("/service", admin.UpdateService)
 	})
 
+	r.Route("/auth", func(r chi.Router) {
+		r.Post("/register", auth.RegisterUser)
+		r.Post("/sign", auth.SignJWT)
+		r.Post("/check", auth.CheckJwt)
+	})
+
 	for _, val := range proxy.Services {
 		_proxy := NewProxy(val)
 		r.Route(_proxy.service.Path, func(r chi.Router) {

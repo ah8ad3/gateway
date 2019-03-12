@@ -84,7 +84,7 @@ func CheckServices(then bool) {
 				Services[serviceID].Server[serverID].Up = true
 			}
 		}
-		Services[serviceID].UPHostsCoutn = upHostsCount
+		Services[serviceID].UPHostsCount = upHostsCount
 		Services[serviceID].UPHosts = upHosts
 	}
 }
@@ -115,10 +115,10 @@ func updateConfigPlugin(pluginName string, serviceID int, pluginID int, config m
 
 // AddPlugin api for add plugin to proxy
 // work with service name and version and plugin name
-func AddPlugin(serviceName string, version int, pluginName string, config map[string]interface{}) (string, bool) {
-	for id, val := range Services {
-		if val.Name == serviceName && val.Version == version {
-			for idx, plug := range val.Plugins {
+func AddPlugin(serviceName string, serviceVersion int, pluginName string, config map[string]interface{}) (string, bool) {
+	for id, service := range Services {
+		if serviceName == service.Name && serviceVersion == service.Version {
+			for idx, plug := range service.Plugins {
 				if plug.Name == pluginName {
 					if config != nil {
 						updateConfigPlugin(pluginName, id, idx, config)
