@@ -1,6 +1,7 @@
 package plugins
 
 import (
+	"github.com/ah8ad3/gateway/plugins/auth"
 	"log"
 	"net/http"
 	"time"
@@ -67,6 +68,7 @@ func RegisterPlugins() {
 	// add your'e plugin here
 	plugs = append(plugs, ratelimitter.RegisterNewPlugin)
 	plugs = append(plugs, ip.RegisterNewPlugin)
+	plugs = append(plugs, auth.RegisterNewPlugin)
 
 	for id := range plugs {
 		name, active, config, middle := plugs[id].(func() (string, bool, map[string]interface{}, func(config map[string]interface{}) func(handler http.Handler) http.Handler))()

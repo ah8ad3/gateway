@@ -10,7 +10,7 @@ import (
 	"github.com/ah8ad3/gateway/pkg/db"
 
 	"github.com/ah8ad3/gateway/pkg/logger"
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
@@ -197,4 +197,41 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(400)
 	_, _ = w.Write([]byte(`{"error": "username is taken"}`))
 	return
+}
+
+// Middleware to check for the too many request every too many requests
+func Middleware(config map[string]interface{}) func(handler http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if logger.Connect == false {
+				w.WriteHeader(500)
+				_, _ = w.Write([]byte(`{"error": "DataBase not connected, please check connection"}`))
+				return
+			}
+			_token := r.Header.Get("Authorization")
+			if _token == "" {
+				w.WriteHeader(400)
+				_, _ = w.Write([]byte(`{"error": "Authorization header missed with token value"}`))
+				return
+			}
+
+			token, _ := jwt.Parse(_token, func(token *jwt.Token) (interface{}, error) {
+				return []byte(db.SecretKey), nil
+			})
+			// When using `Parse`, the result `Claims` would be a map.
+
+			// In another way, you can decode token to your struct, which needs to satisfy `jwt.StandardClaims`
+			user := JWT{}
+			token, _ = jwt.ParseWithClaims(_token, &user, func(token *jwt.Token) (interface{}, error) {
+				return []byte(db.SecretKey), nil
+			})
+			if token.Valid {
+				next.ServeHTTP(w, r)
+				return
+			}
+			w.WriteHeader(403)
+			_, _ = w.Write([]byte(`{"error": "token wrong"}`))
+			return
+		})
+	}
 }
