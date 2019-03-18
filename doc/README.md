@@ -7,4 +7,4 @@ and run three command
 ./gateway run
 ```
 
-you can find version 0.3.0 [here](https://github.com/ah8ad3/gateway/releases/tag/v0.3.0)
+you can find last version [here](https://github.com/ah8ad3/gateway/releases)
