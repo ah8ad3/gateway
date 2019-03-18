@@ -48,7 +48,9 @@ func settings() exception.Err{
 }
 
 // RUN for run server
-func RUN(ip string, port string, route string, test int) {
+func RUN(ip string, port string, route string) {
+	test := os.Getenv("TEST")
+
 	str, _ := db.LoadSecretKey()
 	db.SecretKey = str
 	if db.SecretKey == "" {
@@ -78,7 +80,7 @@ func RUN(ip string, port string, route string, test int) {
 	hs := setup(listen, r)
 	fmt.Println(fmt.Sprintf("Listening on http://%s\n", hs.Addr))
 
-	if test == 0 {
+	if test == "0" {
 		_err := hs.ListenAndServe()
 		if _err != http.ErrServerClosed {
 			log.Fatal(_err.Error())

@@ -2,8 +2,6 @@ package cmd
 
 import (
 	"context"
-	"os"
-
 	"github.com/ah8ad3/gateway/pkg"
 	"github.com/spf13/cobra"
 )
@@ -11,11 +9,7 @@ import (
 var test int
 
 func init() {
-	if os.Getenv("TEST") == "1" {
-		test = 1
-	} else {
-		test = 0
-	}
+
 }
 
 
@@ -27,7 +21,8 @@ func NewServerCmd(ctx context.Context) *cobra.Command {
 		Aliases: []string{"r"},
 		Run: func(cmd *cobra.Command, args []string) {
 			ip, port, route := "0.0.0.0", "3000", "v2"
-			pkg.RUN(ip, port, route, test)
+
+			pkg.RUN(ip, port, route)
 		},
 	}
 }

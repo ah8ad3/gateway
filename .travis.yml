@@ -2,10 +2,12 @@ language: go
 
 go:
   - "1.10"
+  - "1.11"
 
 script:
   - go get -v -t github.com/ah8ad3/gateway
   - sh build/build.sh
+  - make codecov
 
 before_deploy:
 - export TRAVIS_TAG="0.3.$TRAVIS_BUILD_NUMBER"
@@ -14,6 +16,8 @@ before_deploy:
 - git config --local user.email "$USER_EMAIL"
 - git tag "$TRAVIS_TAG" "$TRAVIS_COMMIT"
 
+after_success:
+- bash <(curl -s https://codecov.io/bash)
 
 deploy:
   provider: releases

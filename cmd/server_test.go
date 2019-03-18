@@ -12,4 +12,5 @@ func TestNewServerCmd(t *testing.T) {
 	if err != nil {
 		t.Error("Server error in test")
 	}
+
 }
