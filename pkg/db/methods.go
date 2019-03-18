@@ -93,7 +93,9 @@ func GetProxies() []byte {
 	if err != nil {
 		logger.SetSysLog(logger.SystemLog{Pkg: "db", Time: time.Now(), Log: logger.Log{Event: "critical",
 			Description: err.Error()}})
-		log.Fatal("proxy.bin not found")
+		fmt.Println("proxy.bin not found")
+		return nil
+		//log.Fatal("proxy.bin not found")
 	}
 	data = decryptData(data)
 

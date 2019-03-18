@@ -46,7 +46,12 @@ func LoadServices(jsonData bool, serLocation string) exception.Err {
 		}
 	} else {
 		// this is how get info from db
-		_ = json.Unmarshal(db.GetProxies(), &Services)
+		data := db.GetProxies()
+		if data == nil {
+			Services = []Service{}
+		}else {
+			_ = json.Unmarshal(data, &Services)
+		}
 	}
 
 	for _, val := range Services {
