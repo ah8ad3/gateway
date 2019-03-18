@@ -65,4 +65,5 @@ cov:
 	go tool cover -html=coverage.out;
 
 codecov:
-	@go test ./... -race -coverprofile=coverage.txt -covermode=atomic
+	export TEST=1; \
+	go test ./... -race -coverprofile=coverage.txt -covermode=atomic
