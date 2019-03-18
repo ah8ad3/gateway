@@ -1,8 +1,8 @@
 language: go
 
 go:
-  - "1.10"
   - "1.11"
+  - "1.12"
 
 script:
   - go get -v -t github.com/ah8ad3/gateway
