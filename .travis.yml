@@ -8,6 +8,7 @@ script:
   - go get -v -t github.com/ah8ad3/gateway
   - sh build/build.sh
   - ./dist/gateway load
+  - export TEST="1"
   - make codecov
 
 before_deploy:
