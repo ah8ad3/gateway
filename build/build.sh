@@ -11,7 +11,10 @@ if [ -z "$VERSION" ]; then
 fi
 
 echo "Building application version $VERSION"
-CGO_ENABLED=0 go build -ldflags "-s -w" -ldflags "-X github.com/ah8ad3/gateway/cmd.version=${VERSION}" -o "dist/gateway" ${PKG_SRC}
+env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags "-s -w" -ldflags "-X github.com/ah8ad3/gateway/cmd.version=${VERSION}" -o "dist/gateway" ${PKG_SRC}
+
+# https://www.digitalocean.com/community/tutorials/how-to-build-go-executables-for-multiple-platforms-on-ubuntu-16-04
+# all the arch and os for golang
 
 if [ ! -z "${BUILD_DEFAULT}" ]; then
     echo "Only default binary was requested to build"
