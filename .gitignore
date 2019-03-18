@@ -29,3 +29,5 @@ nod
 
 # for goland idea stuff
 .idea
+
+coverage.*
