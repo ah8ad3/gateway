@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"fmt"
+	"github.com/ah8ad3/gateway/pkg/integrate"
 	"log"
 	"net/http"
 	"os"
@@ -16,13 +17,15 @@ import (
 	"github.com/go-chi/chi"
 )
 
-var serLocation string
+var serLocation, integrateLocation string
 
 func init() {
 	if os.Getenv("TEST") == "1" {
 		serLocation = "./../services.json"
+		integrateLocation = "./../integrates.json"
 	} else {
 		serLocation = "services.json"
+		integrateLocation = "integrates.json"
 	}
 }
 
@@ -40,7 +43,10 @@ func settings() exception.Err{
 	}
 	proxy.CheckServices(false)
 
-	//integrate.LoadIntegration()
+	err = integrate.LoadIntegration(integrateLocation)
+	if err.Message != "" {
+		return err
+	}
 
 	// check all service available every one hour
 	go proxy.HealthCheck()

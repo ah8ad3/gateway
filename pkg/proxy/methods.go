@@ -35,8 +35,6 @@ func LoadServices(jsonData bool, serLocation string) exception.Err {
 		}
 		err = json.Unmarshal(data, &Services)
 		if err != nil {
-			//fmt.Println("services.json cant match to Structure read the docs or act like template")
-			//os.Exit(1)
 			return exception.Err{Message: err.Error(), Critical: true}.Log("system")
 		}
 

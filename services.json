@@ -14,6 +14,18 @@
         "path": "/"
       },
       {
+        "method": "PUT",
+        "path": "/"
+      },
+      {
+        "method": "DELETE",
+        "path": "/"
+      },
+      {
+        "method": "UN",
+        "path": "/"
+      },
+      {
         "method": "POST",
         "path": "/"
       },
@@ -35,6 +47,16 @@
       {
         "method": "GET",
         "path": "/foo"
+      }
+    ],
+    "plugins": [
+      {
+        "name": "rateLimiter",
+        "active": true,
+        "config": {
+          "block_time": 60,
+          "rps": 5
+        }
       }
     ]
   }
