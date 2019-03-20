@@ -2,6 +2,7 @@ package proxy
 
 import (
 	"github.com/ah8ad3/gateway/plugins"
+	"os"
 	"testing"
 
 	"github.com/ah8ad3/gateway/pkg/db"
@@ -15,10 +16,16 @@ func TestLoadServices(t *testing.T) {
 	db.GenerateSecretKey()
 	LoadServices(true, "./../../services.json")
 	err := LoadServices(true, "./../../ser.json")
+	LoadServices(true, "./../../integrates.json")
 	if err.Message == "" {
 		t.Fatal("File not found error")
 	}
 	LoadServices(false, "")
+
+	os.Remove("./../../db/proxy.bin")
+	LoadServices(false, "")
+
+	LoadServices(true, "./../../services.json")
 
 	if len(Services) == 0 {
 		t.Fatal("Services cant load")
