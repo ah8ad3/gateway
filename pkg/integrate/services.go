@@ -3,12 +3,8 @@ package integrate
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"time"
-
 	exception "github.com/ah8ad3/gateway/pkg/err"
-	"github.com/ah8ad3/gateway/pkg/logger"
+	"io/ioutil"
 )
 
 const (
@@ -44,19 +40,19 @@ func GetIntegrateService(url string, query string) ([]byte, bool) {
 		url = url + "?" + query
 	}
 
-	req, _ := http.NewRequest("GET", url, nil)
-	client := &http.Client{}
+	//req, _ := http.NewRequest("GET", url, nil)
+	//client := &http.Client{}
+	//
+	//res, _ := client.Do(req)
+	//
+	//if res.StatusCode != 200 {
+	//	logger.SetUserLog(logger.UserLog{Log: logger.Log{Description: "Service is down!", Event: "critical"},
+	//		Time: time.Now(), RequestURL: url})
+	//
+	//	return []byte(`{"error": "Service is Down!"}`), true
+	//}
+	//defer res.Body.Close()
+	//body, _ := ioutil.ReadAll(res.Body)
 
-	res, _ := client.Do(req)
-
-	if res.StatusCode != 200 {
-		logger.SetUserLog(logger.UserLog{Log: logger.Log{Description: "Service is down!", Event: "critical"},
-			Time: time.Now(), RequestURL: url})
-
-		return []byte(`{"error": "Service is Down!"}`), true
-	}
-	defer res.Body.Close()
-	body, _ := ioutil.ReadAll(res.Body)
-
-	return body, false
+	return nil, false
 }

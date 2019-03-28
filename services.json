@@ -59,5 +59,30 @@
         }
       }
     ]
+  },
+  {
+    "name": "serviceTest",
+    "path": "/google",
+    "server": [
+      {"server": "https://google.com"}
+    ],
+    "version": 1,
+    "description": "Service #2 of Gate",
+    "urls": [
+      {
+        "method": "GET",
+        "path": "/foo"
+      }
+    ],
+    "plugins": [
+      {
+        "name": "rateLimiter",
+        "active": true,
+        "config": {
+          "block_time": 60,
+          "rps": 5
+        }
+      }
+    ]
   }
 ]

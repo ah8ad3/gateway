@@ -109,8 +109,8 @@ func getProxyHttp(writer http.ResponseWriter, request *http.Request) {
 
 func postProxyHttp(writer http.ResponseWriter, request *http.Request) {
 	// remove path form url and send to service and serve answer
-	splitRoute := strings.Split(request.URL.Path, "/")[2:]
-	route := strings.Join(splitRoute, "/")
+	splitRoute := strings.Split(request.URL.Path, "/")
+	route := strings.Join(splitRoute[2:], "/")
 	if route == "" {
 		route = "/"
 	} else {
