@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"fmt"
 	"math/rand"
 	"net/http"
 	"net/http/httputil"
@@ -9,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ah8ad3/gateway/pkg/logger"
 	"github.com/ah8ad3/gateway/pkg/proxy"
 )
 
@@ -21,7 +19,7 @@ type Proxy struct {
 
 // NewProxy to create Proxy instance easier
 func NewProxy(service proxy.Service) Proxy {
-	return Proxy{service: service, proxy: singleHodtRewriteReverse(service)}
+	return Proxy{service: service, proxy: singleHostRewriteReverse(service)}
 }
 
 func (p Proxy) handleProxy(w http.ResponseWriter, r *http.Request) {
@@ -29,27 +27,6 @@ func (p Proxy) handleProxy(w http.ResponseWriter, r *http.Request) {
 	// p.proxy.Transport = &myTransport{}
 	// also here can define all middleware stuff
 	p.proxy.ServeHTTP(w, r)
-}
-
-func findHost(path string) string {
-	rand.Seed(time.Now().Unix())
-	path = "/" + path
-	for _, val := range proxy.Services {
-		if val.Path == path {
-			for range val.Server {
-				ser := val.Server[rand.Intn(len(val.Server))]
-				if ser.Up {
-					return ser.Server
-				}
-			}
-			return val.Server[rand.Intn(len(val.Server))].Server
-		}
-	}
-	logger.SetSysLog(logger.SystemLog{Log: logger.Log{Event: "critical",
-		Description: fmt.Sprintf("bad path check services %s", path)},
-		Pkg: "auth", Time: time.Now()})
-	//log.Fatal("bad path check services ", path)
-	return ""
 }
 
 func getHost(proxy proxy.Service) *url.URL {
@@ -63,7 +40,7 @@ func getHost(proxy proxy.Service) *url.URL {
 
 }
 
-func singleHodtRewriteReverse(proxy proxy.Service) httputil.ReverseProxy {
+func singleHostRewriteReverse(proxy proxy.Service) httputil.ReverseProxy {
 
 	director := func(req *http.Request) {
 		target := getHost(proxy)
