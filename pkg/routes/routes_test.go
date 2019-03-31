@@ -1,12 +1,13 @@
 package routes
 
 import (
+	"net/http"
+	"testing"
+
 	"github.com/ah8ad3/gateway/pkg/db"
 	"github.com/ah8ad3/gateway/pkg/integrate"
 	"github.com/ah8ad3/gateway/pkg/proxy"
 	"github.com/ah8ad3/gateway/plugins"
-	"net/http"
-	"testing"
 )
 
 func TestBefore(t *testing.T) {

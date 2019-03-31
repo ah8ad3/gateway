@@ -47,7 +47,7 @@ func LoadServices(jsonData bool, serLocation string) exception.Err {
 		data := db.GetProxies()
 		if data == nil {
 			Services = []Service{}
-		}else {
+		} else {
 			_ = json.Unmarshal(data, &Services)
 		}
 	}

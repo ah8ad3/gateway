@@ -2,10 +2,11 @@ package pkg
 
 import (
 	"fmt"
-	"github.com/ah8ad3/gateway/pkg/integrate"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/ah8ad3/gateway/pkg/integrate"
 
 	"github.com/ah8ad3/gateway/pkg/db"
 	exception "github.com/ah8ad3/gateway/pkg/err"
@@ -29,7 +30,7 @@ func init() {
 	}
 }
 
-func settings() exception.Err{
+func settings() exception.Err {
 	logger.OpenConnection()
 	// Require for auth Database staff
 	auth.OpenAuthCollection()
@@ -64,7 +65,7 @@ func RUN(ip string, port string, route string) {
 	}
 	var r *chi.Mux
 	err := settings()
-	if err.Critical{
+	if err.Critical {
 		log.Fatal(err.Message)
 	}
 
@@ -73,7 +74,6 @@ func RUN(ip string, port string, route string) {
 	} else {
 		r = routes.V2()
 	}
-
 
 	if port == "" {
 		port = "3000"
@@ -91,7 +91,7 @@ func RUN(ip string, port string, route string) {
 		if _err != http.ErrServerClosed {
 			log.Fatal(_err.Error())
 		}
-	}else {
+	} else {
 		fmt.Println("server ignored from listen and serve because of test mode if in production mode export, TEST=0")
 	}
 }

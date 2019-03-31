@@ -1,14 +1,15 @@
 package proxy
 
 import (
-	"github.com/ah8ad3/gateway/plugins"
 	"os"
 	"testing"
+
+	"github.com/ah8ad3/gateway/plugins"
 
 	"github.com/ah8ad3/gateway/pkg/db"
 )
 
-func TestBefore(t *testing.T)  {
+func TestBefore(t *testing.T) {
 	plugins.RegisterPlugins()
 }
 

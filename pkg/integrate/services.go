@@ -3,8 +3,9 @@ package integrate
 import (
 	"encoding/json"
 	"fmt"
-	exception "github.com/ah8ad3/gateway/pkg/err"
 	"io/ioutil"
+
+	exception "github.com/ah8ad3/gateway/pkg/err"
 )
 
 const (
@@ -16,7 +17,7 @@ const (
 var Integrates []Integrate
 
 // LoadIntegration method for load all aggregations from file
-func LoadIntegration(location string) exception.Err  {
+func LoadIntegration(location string) exception.Err {
 	data, err := ioutil.ReadFile(location)
 	if err != nil {
 		return exception.Err{Message: err.Error(), Critical: true}.Log("system")

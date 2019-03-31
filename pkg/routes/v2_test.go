@@ -1,10 +1,11 @@
 package routes
 
 import (
-	"github.com/ah8ad3/gateway/pkg/proxy"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/ah8ad3/gateway/pkg/proxy"
 )
 
 func testAPIReverse(t *testing.T, query bool, path string, pxy Proxy) {
@@ -29,7 +30,6 @@ func testAPIReverse(t *testing.T, query bool, path string, pxy Proxy) {
 	handler.ServeHTTP(rr, req)
 }
 
-
 func TestNewProxy(t *testing.T) {
 	res := singleJoiningSlash("a", "b")
 	if res != "a/b" {
@@ -50,6 +50,5 @@ func TestNewProxy(t *testing.T) {
 	_proxy := NewProxy(proxy.Services[2])
 	testAPIReverse(t, false, "/google/foo", _proxy)
 	testAPIReverse(t, true, "/google/", _proxy)
-
 
 }

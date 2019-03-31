@@ -113,7 +113,7 @@ func V2() *chi.Mux {
 	for _, val := range proxy.Services {
 		_proxy := NewProxy(val)
 		r.Route(_proxy.service.Path, func(r chi.Router) {
-			for _, plug := range val.Plugins{
+			for _, plug := range val.Plugins {
 				r.Use(plug.Middleware(plug.Config))
 			}
 			r.HandleFunc("/*", _proxy.handleProxy)

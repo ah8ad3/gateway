@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/ah8ad3/gateway/pkg/integrate"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/ah8ad3/gateway/pkg/integrate"
 
 	"github.com/ah8ad3/gateway/pkg/proxy"
 

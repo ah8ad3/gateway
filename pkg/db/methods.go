@@ -65,7 +65,7 @@ func InsertProxy(proxies []byte) exception.Err {
 // InsertPlugins func for insert all plugins that been Marshal and encrypt and save it to db/plugin.bin file
 func InsertPlugins(plugins []byte) exception.Err {
 	if _, err := ioutil.ReadFile(pluginDir); err != nil {
-		plugins, err:= encryptData(plugins)
+		plugins, err := encryptData(plugins)
 		if err.Message != "" {
 			return err
 		}
@@ -165,7 +165,7 @@ func decrypt(data []byte, passphrase string) []byte {
 	return plaintext
 }
 
-func encryptData(data []byte) ([]byte, exception.Err){
+func encryptData(data []byte) ([]byte, exception.Err) {
 	pass := SecretKey
 	if pass == "" {
 		return nil, exception.Err{Message: "Secret Key can not be empty, for security issue", Critical: true}

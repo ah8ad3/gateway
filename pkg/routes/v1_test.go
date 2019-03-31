@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func testAPIGet(t *testing.T, method string, url string)  {
+func testAPIGet(t *testing.T, method string, url string) {
 	// Create a request to pass to our handler. We don't have any query parameters for now, so we'll
 	// pass 'nil' as the third parameter.
 	req, err := http.NewRequest(method, url, nil)
@@ -24,10 +24,9 @@ func testAPIGet(t *testing.T, method string, url string)  {
 	handler.ServeHTTP(rr, req)
 }
 
-func testAPIPost(t *testing.T, method string, path string)  {
+func testAPIPost(t *testing.T, method string, path string) {
 	// Create a request to pass to our handler.
 	payload := []byte(`{"name": "test product", "price": 11}`)
-
 
 	req, err := http.NewRequest(method, path, bytes.NewBuffer(payload))
 	if err != nil {
@@ -94,7 +93,6 @@ func testAPIIntegrate(t *testing.T, method string, path string) {
 	// directly and pass in our Request and ResponseRecorder.
 	handler.ServeHTTP(rr, req)
 }
-
 
 func TestGetService(t *testing.T) {
 	GetService("google.com", "/about", "")

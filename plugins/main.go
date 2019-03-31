@@ -1,14 +1,13 @@
 package plugins
 
 import (
-	"github.com/ah8ad3/gateway/plugins/auth"
 	"log"
 	"net/http"
 	"time"
 
-	"github.com/ah8ad3/gateway/plugins/ip"
-
 	"github.com/ah8ad3/gateway/pkg/logger"
+	"github.com/ah8ad3/gateway/plugins/auth"
+	"github.com/ah8ad3/gateway/plugins/ip"
 	"github.com/ah8ad3/gateway/plugins/ratelimitter"
 )
 
