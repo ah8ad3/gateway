@@ -72,6 +72,10 @@
       {
         "method": "GET",
         "path": "/foo"
+      },
+      {
+        "method": "GET",
+        "path": "/"
       }
     ],
     "plugins": [

@@ -5,6 +5,7 @@
 [![Build Status](https://travis-ci.org/ah8ad3/gateway.svg?branch=master)](https://travis-ci.org/ah8ad3/gateway)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ah8ad3/gateway)](https://goreportcard.com/report/github.com/ah8ad3/gateway)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fah8ad3%2Fgateway.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fah8ad3%2Fgateway?ref=badge_shield)
+[![codecov](https://codecov.io/gh/ah8ad3/gateway/branch/master/graph/badge.svg)](https://codecov.io/gh/ah8ad3/gateway)
 
 ---
 
