@@ -186,11 +186,7 @@ func decryptData(data []byte) []byte {
 
 func GenerateSecretKey() {
 	key := make([]byte, 16)
-
-	_, err := rand.Read(key)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	rand.Read(key)
 
 	sec := fmt.Sprintf("%s", key)
 
@@ -198,24 +194,17 @@ func GenerateSecretKey() {
 	if isSaved {
 		SecretKey = sec
 	} else {
-		str, found := LoadSecretKey()
-		if found {
-			SecretKey = str
-		} else {
-			GenerateSecretKey()
-		}
+		str, _ := LoadSecretKey()
+		SecretKey = str
 	}
 }
 
 func exists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
-		return true, nil
+		return true, err
 	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return true, err
+	return false, nil
 }
 
 // saveSecretKey save it to file
@@ -223,10 +212,7 @@ func saveSecretKey(secret string) bool {
 	exist, _ := exists(dbDir)
 	if exist {
 		if _, err := ioutil.ReadFile(secretDir); err != nil {
-			err := ioutil.WriteFile(secretDir, []byte(secret), 0644)
-			if err != nil {
-				log.Fatal(err.Error())
-			}
+			ioutil.WriteFile(secretDir, []byte(secret), 0644)
 			return true
 		}
 		return false
