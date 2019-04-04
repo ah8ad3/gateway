@@ -38,12 +38,19 @@ func TestInsertProxy(t *testing.T) {
 	InsertProxy(jData)
 	InsertProxy(jData)
 
-	SecretKey = ""
-	InsertProxy(jData)
 }
 
 func TestGetProxies(t *testing.T) {
 	GetProxies()
-	LoadSecretKey()
-	GetProxies()
+}
+
+func TestInsertPlugins(t *testing.T) {
+	jData, _ := json.Marshal(samples)
+	InsertPlugins(jData)
+	InsertPlugins(jData)
+
+}
+
+func TestGetPlugins(t *testing.T) {
+	GetPlugins()
 }
