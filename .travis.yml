@@ -9,7 +9,7 @@ script:
   - sh build/build.sh
   - ./dist/gateway load
   - export TEST="1"
-  - make codecov
+#  - make codecov
 
 before_deploy:
 - export TRAVIS_TAG="0.4.$TRAVIS_BUILD_NUMBER"
