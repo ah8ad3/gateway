@@ -31,3 +31,5 @@ nod
 .idea
 
 coverage.*
+gateway
+vendor
