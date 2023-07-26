@@ -63,16 +63,16 @@ func RUN(ip string, port string, route string) {
 	if db.SecretKey == "" {
 		log.Fatal("Secret Key not Found, generate it by\n  \t gateway secret")
 	}
-	var r *chi.Mux
+	var handler *chi.Mux
 	err := settings()
 	if err.Critical {
 		log.Fatal(err.Message)
 	}
 
 	if route == "v1" {
-		r = routes.V1()
+		handler = routes.V1()
 	} else {
-		r = routes.V2()
+		handler = routes.V2()
 	}
 
 	if port == "" {
@@ -83,8 +83,8 @@ func RUN(ip string, port string, route string) {
 	}
 	listen := ip + ":" + port
 
-	hs := setup(listen, r)
-	fmt.Println(fmt.Sprintf("Listening on http://%s\n", hs.Addr))
+	hs := setup(listen, handler)
+	fmt.Printf("Listening on http://%s \n", hs.Addr)
 
 	if test == "0" {
 		_err := hs.ListenAndServe()
@@ -96,9 +96,9 @@ func RUN(ip string, port string, route string) {
 	}
 }
 
-func setup(url string, r *chi.Mux) *http.Server {
+func setup(url string, handler *chi.Mux) *http.Server {
 
-	hs := &http.Server{Addr: url, Handler: r}
+	hs := &http.Server{Addr: url, Handler: handler}
 
 	return hs
 }
