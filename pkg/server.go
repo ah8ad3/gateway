@@ -55,7 +55,7 @@ func settings() exception.Err {
 }
 
 // RUN for run server
-func RUN(ip string, port string, route string) {
+func RUN(ip string, port string, route string, stopSignal chan bool) {
 	test := os.Getenv("TEST")
 
 	str, _ := db.LoadSecretKey()
@@ -67,6 +67,12 @@ func RUN(ip string, port string, route string) {
 	err := settings()
 	if err.Critical {
 		log.Fatal(err.Message)
+	}
+
+	if <-stopSignal {
+		log.Fatal("StopCommand for server")
+		// return
+
 	}
 
 	if route == "v1" {
