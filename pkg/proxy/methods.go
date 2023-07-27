@@ -92,7 +92,7 @@ func CheckServices(then bool) {
 	}
 }
 
-// HealthCheck function for check all services per hour in goroutine
+// HealthCheck function for check all services per minute in goroutine
 func HealthCheck() {
 	for {
 		time.Sleep(time.Duration(time.Minute * 1))
